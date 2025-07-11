@@ -16,6 +16,7 @@ import org.sinytra.fabric.networking_api.NeoCommonNetworking;
 import java.util.Set;
 
 public class NeoServerConfigurationNetworking {
+    private static boolean isReconfiguring = false;
 
     public static <T extends CustomPacketPayload> boolean registerGlobalReceiver(CustomPacketPayload.Type<T> type, ServerConfigurationNetworking.ConfigurationPacketHandler<T> handler) {
         NeoCommonNetworking.assertPayloadType(PayloadTypeRegistryImpl.CONFIGURATION_C2S, type.id(), PacketFlow.SERVERBOUND, ConnectionProtocol.CONFIGURATION);
@@ -53,6 +54,14 @@ public class NeoServerConfigurationNetworking {
 
     public static PacketSender getSender(ServerConfigurationPacketListenerImpl handler) {
         return new NeoServerPacketSender(handler.getConnection());
+    }
+
+    public static boolean isReconfiguring(ServerConfigurationPacketListenerImpl handler) {
+        return isReconfiguring;
+    }
+
+    public static void setReconfiguring(ServerConfigurationPacketListenerImpl handler) {
+        isReconfiguring = true;
     }
 
     private record ServerConfigNeoContextWrapper(IPayloadContext context) implements ServerConfigurationNetworking.Context {

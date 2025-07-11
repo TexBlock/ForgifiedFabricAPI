@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import io.netty.channel.ChannelFutureListener;
 import org.jetbrains.annotations.Nullable;
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking;
@@ -31,7 +32,6 @@ import net.fabricmc.fabric.mixin.networking.client.accessor.ClientLoginNetworkHa
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -72,16 +72,15 @@ public final class ClientLoginNetworkAddon extends AbstractNetworkAddon<ClientLo
 		}
 
 		FriendlyByteBuf buf = PacketByteBufs.slice(originalBuf);
-		List<PacketSendListener> callbacks = new ArrayList<>();
+		List<ChannelFutureListener> callbacks = new ArrayList<>();
 
 		try {
 			CompletableFuture<@Nullable FriendlyByteBuf> future = handler.receive(this.client, this.handler, buf, callbacks::add);
 			future.thenAccept(result -> {
 				ServerboundCustomQueryAnswerPacket packet = new ServerboundCustomQueryAnswerPacket(queryId, result == null ? null : new PacketByteBufLoginQueryResponse(result));
-				((ClientLoginNetworkHandlerAccessor) this.handler).getConnection().send(packet, new PacketSendListener() {
-					@Override
-					public void onSuccess() {
-						callbacks.forEach(PacketSendListener::onSuccess);
+				((ClientLoginNetworkHandlerAccessor) this.handler).getConnection().send(packet, operation -> {
+					for (ChannelFutureListener callback : callbacks) {
+						callback.operationComplete(operation);
 					}
 				});
 			});

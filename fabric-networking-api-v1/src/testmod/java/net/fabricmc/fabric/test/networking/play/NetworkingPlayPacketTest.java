@@ -20,7 +20,9 @@ import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -29,7 +31,9 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.impl.networking.FabricRegistryByteBuf;
 import net.fabricmc.fabric.test.networking.NetworkingTestmods;
+import net.fabricmc.fabric.test.networking.common.NetworkingCommonTest;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.PacketSendListener;
@@ -40,6 +44,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientboundBundlePacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.loading.FMLLoader;
@@ -89,7 +94,12 @@ public final class NetworkingPlayPacketTest implements ModInitializer {
 					));
 					ServerPlayNetworking.getSender(ctx.getSource().getPlayer()).sendPacket(packet);
 					return Command.SINGLE_SUCCESS;
-				})));
+				}))
+				.then(literal("reconfigure").executes(ctx -> {
+					ServerPlayNetworking.reconfigure(ctx.getSource().getPlayer());
+					return Command.SINGLE_SUCCESS;
+				}))
+		);
 	}
 
 	@Override
@@ -131,6 +141,15 @@ public final class NetworkingPlayPacketTest implements ModInitializer {
 		}
 
 		public void write(RegistryFriendlyByteBuf buf) {
+			// Test that we can get the configuration channels that the client accepts
+			FabricRegistryByteBuf fabricRegistryByteBuf = (FabricRegistryByteBuf) buf;
+			Collection<ResourceLocation> channels = fabricRegistryByteBuf.fabric_getSendableConfigurationChannels();
+			Objects.requireNonNull(channels);
+
+			if (!channels.contains(NetworkingCommonTest.CommonPayload.ID.id())) {
+				throw new IllegalStateException("Expected common payload channel to be sent");
+			}
+
 			ComponentSerialization.STREAM_CODEC.encode(buf, this.message);
 		}
 

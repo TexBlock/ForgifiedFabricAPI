@@ -16,17 +16,24 @@
 
 package net.fabricmc.fabric.mixin.networking;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.network.PacketListener;
+import net.minecraft.network.ProtocolInfo;
+import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
+import org.sinytra.fabric.networking_api.NeoListenableNetworkHandler;
+import org.sinytra.fabric.networking_api.server.NeoServerConfigurationNetworking;
+import org.sinytra.fabric.networking_api.server.NeoServerPlayNetworking;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.network.Connection;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import org.sinytra.fabric.networking_api.NeoListenableNetworkHandler;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 // We want to apply a bit earlier than other mods which may not use us in order to prevent refCount issues
 @Mixin(value = ServerGamePacketListenerImpl.class, priority = 999)
@@ -38,6 +45,18 @@ abstract class ServerPlayNetworkHandlerMixin extends ServerCommonPacketListenerI
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void initAddon(CallbackInfo ci) {
 		ServerPlayConnectionEvents.INIT.invoker().onPlayInit((ServerGamePacketListenerImpl) (Object) this, server);
+	}
+
+	@WrapOperation(method = "handleConfigurationAcknowledged", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;setupInboundProtocol(Lnet/minecraft/network/ProtocolInfo;Lnet/minecraft/network/PacketListener;)V"))
+	private <T extends PacketListener> void onAcknowledgeReconfiguration(Connection instance, ProtocolInfo<T> state, T packetListener, Operation<Void> original) {
+		original.call(instance, state, packetListener);
+
+		ServerConfigurationPacketListenerImpl networkHandler = (ServerConfigurationPacketListenerImpl) packetListener;
+		NeoServerConfigurationNetworking.setReconfiguring(networkHandler);
+
+		if (NeoServerPlayNetworking.requestedReconfigure()) {
+			networkHandler.startConfiguration();
+		}
 	}
 
 	@Override

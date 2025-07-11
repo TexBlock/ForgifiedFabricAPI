@@ -19,6 +19,8 @@ import org.sinytra.fabric.networking_api.NeoCommonNetworking;
 import java.util.Set;
 
 public class NeoServerPlayNetworking {
+    private static boolean requestedReconfigure = false;
+
     public static <T extends CustomPacketPayload> boolean registerGlobalReceiver(CustomPacketPayload.Type<T> type, ServerPlayNetworking.PlayPayloadHandler<T> handler) {
         NeoCommonNetworking.assertPayloadType(PayloadTypeRegistryImpl.PLAY_C2S, type.id(), PacketFlow.SERVERBOUND, ConnectionProtocol.PLAY);
         return NeoCommonNetworking.PLAY_REGISTRY.registerGlobalReceiver(type, PacketFlow.SERVERBOUND, handler, ServerNeoContextWrapper::new, ServerPlayNetworking.PlayPayloadHandler::receive);
@@ -59,10 +61,23 @@ public class NeoServerPlayNetworking {
 
     public static void onClientReady(ServerPlayer player) {
         NeoServerPacketSender packetSender = new NeoServerPacketSender(player.connection.getConnection());
-        ServerPlayConnectionEvents.JOIN.invoker().onPlayReady(player.connection,packetSender, player.server);
+        ServerPlayConnectionEvents.JOIN.invoker().onPlayReady(player.connection,packetSender, player.getServer());
 
         MinecraftRegisterPayload registerPacket = new MinecraftRegisterPayload(NeoCommonNetworking.PLAY_REGISTRY.getGlobalReceivers(PacketFlow.SERVERBOUND));
         packetSender.sendPacket(registerPacket);
+    }
+
+    public static void reconfigure(ServerGamePacketListenerImpl handler) {
+        if (requestedReconfigure) {
+            throw new IllegalStateException("Already requested reconfigure");
+        }
+
+        requestedReconfigure = true;
+        handler.switchToConfig();
+    }
+
+    public static boolean requestedReconfigure() {
+        return requestedReconfigure;
     }
 
     private record ServerNeoContextWrapper(IPayloadContext context) implements ServerPlayNetworking.Context {

@@ -16,7 +16,9 @@
 
 package net.fabricmc.fabric.mixin.networking;
 
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.network.*;
 import org.sinytra.fabric.networking_api.NeoListenableNetworkHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,10 +27,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.fabricmc.fabric.impl.networking.NetworkHandlerExtensions;
 import net.fabricmc.fabric.impl.networking.PacketCallbackListener;
-import net.minecraft.network.Connection;
-import net.minecraft.network.PacketListener;
-import net.minecraft.network.PacketSendListener;
-import net.minecraft.network.ProtocolInfo;
 import net.minecraft.network.protocol.Packet;
 
 @Mixin(Connection.class)
@@ -37,7 +35,7 @@ abstract class ClientConnectionMixin {
 	private PacketListener packetListener;
 
 	@Inject(method = "sendPacket", at = @At(value = "FIELD", target = "Lnet/minecraft/network/Connection;sentPackets:I"))
-	private void checkPacket(Packet<?> packet, PacketSendListener callback, boolean flush, CallbackInfo ci) {
+	private void checkPacket(Packet<?> packet, ChannelFutureListener callback, boolean flush, CallbackInfo ci) {
 		if (this.packetListener instanceof PacketCallbackListener) {
 			((PacketCallbackListener) this.packetListener).sent(packet);
 		}
@@ -54,9 +52,6 @@ abstract class ClientConnectionMixin {
 	private void disconnectAddon(ChannelHandlerContext channelHandlerContext, CallbackInfo ci) {
 		if (packetListener instanceof NetworkHandlerExtensions extension) {
 			extension.getAddon().handleDisconnect();
-		}
-		if (packetListener instanceof NeoListenableNetworkHandler handler) {
-			handler.handleDisconnect();
 		}
 	}
 

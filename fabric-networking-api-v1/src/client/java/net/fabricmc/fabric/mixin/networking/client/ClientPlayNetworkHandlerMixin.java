@@ -17,24 +17,23 @@
 package net.fabricmc.fabric.mixin.networking.client;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.registration.ChannelAttributes;
+import org.sinytra.fabric.networking_api.NeoListenableNetworkHandler;
+import org.sinytra.fabric.networking_api.client.NeoClientCommonNetworking;
+import org.sinytra.fabric.networking_api.client.NeoClientPlayNetworking;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.CommonListenerCookie;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundLoginPacket;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.registration.ChannelAttributes;
-import org.sinytra.fabric.networking_api.client.NeoClientCommonNetworking;
-import org.sinytra.fabric.networking_api.client.NeoClientPlayNetworking;
-import org.sinytra.fabric.networking_api.NeoListenableNetworkHandler;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
 import java.util.Set;
 
 // We want to apply a bit earlier than other mods which may not use us in order to prevent refCount issues
@@ -43,9 +42,9 @@ abstract class ClientPlayNetworkHandlerMixin extends ClientCommonPacketListenerI
     @Shadow
     public abstract Connection getConnection();
 
-    protected ClientPlayNetworkHandlerMixin(Minecraft client, Connection connection, CommonListenerCookie connectionState) {
-        super(client, connection, connectionState);
-    }
+	protected ClientPlayNetworkHandlerMixin(Minecraft client, Connection connection, CommonListenerCookie connectionState) {
+		super(client, connection, connectionState);
+	}
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void initAddon(CallbackInfo ci) {

@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-import net.fabricmc.fabric.impl.networking.server.ServerNetworkingImpl;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -29,6 +28,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.fabricmc.fabric.impl.networking.server.ServerNetworkingImpl;
 import org.sinytra.fabric.networking_api.server.NeoServerPlayNetworking;
 
 /**
@@ -290,6 +290,28 @@ public final class ServerPlayNetworking {
 		Objects.requireNonNull(payload.type(), "CustomPayload#getId() cannot return null for payload class: " + payload.getClass());
 
 		player.connection.send(createS2CPacket(payload));
+	}
+
+	/**
+	 * Put the player back into configuration phase and re-run all of the configuration tasks.
+	 *
+	 * @param player the player
+	 */
+	public static void reconfigure(ServerPlayer player) {
+		Objects.requireNonNull(player, "Server player entity cannot be null");
+
+		reconfigure(player.connection);
+	}
+
+	/**
+	 * Put the player back into configuration phase and re-run all of the configuration tasks.
+	 *
+	 * @param handler the network handler
+	 */
+	public static void reconfigure(ServerGamePacketListenerImpl handler) {
+		Objects.requireNonNull(handler, "Server play network handler cannot be null");
+
+		NeoServerPlayNetworking.reconfigure(handler);
 	}
 
 	private ServerPlayNetworking() {

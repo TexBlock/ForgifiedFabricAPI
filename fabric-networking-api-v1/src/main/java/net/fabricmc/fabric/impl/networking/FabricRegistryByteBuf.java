@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package net.fabricmc.fabric.test.base.client.mixin;
+package net.fabricmc.fabric.impl.networking;
 
-import net.minecraft.client.gui.components.CycleButton;
-import net.minecraft.network.chat.Component;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import java.util.Set;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
-@Mixin(CycleButton.class)
-public interface CyclingButtonWidgetAccessor {
-	@Accessor
-	Component getName();
+public interface FabricRegistryByteBuf {
+	void fabric_setSendableConfigurationChannels(Set<ResourceLocation> globalChannels);
+
+	@Nullable
+	Set<ResourceLocation> fabric_getSendableConfigurationChannels();
 }

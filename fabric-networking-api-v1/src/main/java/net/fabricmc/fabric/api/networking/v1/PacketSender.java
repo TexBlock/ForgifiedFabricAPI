@@ -16,7 +16,7 @@
 
 package net.fabricmc.fabric.api.networking.v1;
 
-import net.minecraft.network.PacketSendListener;
+import io.netty.channel.ChannelFutureListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -59,7 +59,7 @@ public interface PacketSender {
 	 * @param packet the packet
 	 * @param callback an optional callback to execute after the packet is sent, may be {@code null}.
 	 */
-	void sendPacket(Packet<?> packet, @Nullable PacketSendListener callback);
+	void sendPacket(Packet<?> packet, @Nullable ChannelFutureListener callback);
 
 	/**
 	 * Sends a packet.
@@ -67,7 +67,7 @@ public interface PacketSender {
 	 * @param payload the payload
 	 * @param callback an optional callback to execute after the packet is sent, may be {@code null}.
 	 */
-	default void sendPacket(CustomPacketPayload payload, @Nullable PacketSendListener callback) {
+	default void sendPacket(CustomPacketPayload payload, @Nullable ChannelFutureListener callback) {
 		sendPacket(createPacket(payload), callback);
 	}
 

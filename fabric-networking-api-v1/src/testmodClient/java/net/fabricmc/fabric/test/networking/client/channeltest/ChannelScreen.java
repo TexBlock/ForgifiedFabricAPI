@@ -17,7 +17,6 @@
 package net.fabricmc.fabric.test.networking.client.channeltest;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.test.networking.client.channeltest.ChannelList.Entry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -67,7 +66,7 @@ final class ChannelScreen extends Screen {
 			final Component clickMe = Component.literal("Click S2C or C2S to view supported channels").withStyle(ChatFormatting.YELLOW);
 
 			final int textWidth = this.font.width(clickMe);
-			drawContext.renderTooltip(
+			drawContext.setTooltipForNextFrame(
 					this.font,
 					clickMe,
 					(int) (this.width / 2.0F - (textWidth / 2.0F)),

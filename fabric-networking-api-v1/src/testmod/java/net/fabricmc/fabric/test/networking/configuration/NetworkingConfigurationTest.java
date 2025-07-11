@@ -50,6 +50,10 @@ public class NetworkingConfigurationTest implements ModInitializer {
 		PayloadTypeRegistry.configurationC2S().register(ConfigurationStartPacket.ID, ConfigurationStartPacket.CODEC);
 
 		ServerConfigurationConnectionEvents.CONFIGURE.register((handler, server) -> {
+			if (ServerConfigurationNetworking.isReconfiguring(handler)) {
+				LOGGER.info("Reconfiguring client");
+			}
+
 			// You must check to see if the client can handle your config task
 			if (ServerConfigurationNetworking.canSend(handler, ConfigurationPacket.ID)) {
 				handler.addTask(new TestConfigurationTask("Example data"));
@@ -69,7 +73,7 @@ public class NetworkingConfigurationTest implements ModInitializer {
 
 		// Enable the vanilla debugconfig command
 		NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, RegisterCommandsEvent.class, event -> {
-			DebugConfigCommand.register(event.getDispatcher());
+			DebugConfigCommand.register(event.getDispatcher(), event.getBuildContext());
 		});
 	}
 

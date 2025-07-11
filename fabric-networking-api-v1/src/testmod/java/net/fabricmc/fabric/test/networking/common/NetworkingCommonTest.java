@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -35,11 +37,10 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.test.networking.NetworkingTestmods;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.server.ServerLifecycleEvent;
 
 public class NetworkingCommonTest implements ModInitializer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(NetworkingCommonTest.class);
 	private boolean firstLoad = true;
 	private List<String> receivedPlay = new ArrayList<>();
 	private List<String> receivedConfig = new ArrayList<>();
@@ -103,6 +104,11 @@ public class NetworkingCommonTest implements ModInitializer {
 		server.execute(new Runnable() {
 			@Override
 			public void run() {
+				if (!server.isRunning()) {
+					LOGGER.warn("Server is no longer running, cannot execute task");
+					return;
+				}
+
 				if (server.getTickCount() >= targetTime) {
 					runnable.run();
 					return;

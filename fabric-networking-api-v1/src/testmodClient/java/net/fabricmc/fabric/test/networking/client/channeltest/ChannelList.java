@@ -52,7 +52,7 @@ final class ChannelList extends AbstractSelectionList<ChannelList.Entry> {
 
 		@Override
 		public void render(GuiGraphics drawContext, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			drawContext.renderTooltip(ChannelList.this.minecraft.font, Component.literal(this.channel.toString()).withStyle(ChatFormatting.WHITE), x, y);
+			drawContext.setTooltipForNextFrame(ChannelList.this.minecraft.font, Component.literal(this.channel.toString()).withStyle(ChatFormatting.WHITE), x, y);
 		}
 	}
 }
