@@ -10,8 +10,7 @@
     "ClientConfigurationNetworkHandlerMixin",
     "ClientLoginNetworkHandlerMixin",
     "ClientNetworkRegistryMixin",
-    "ClientPlayNetworkHandlerMixin",
-    "NetworkRegistryClientMixin"
+    "ClientPlayNetworkHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
