@@ -34,7 +34,7 @@ public class NetworkingEventHooks {
             return;
         }
 
-        DebugConfigCommand.register(event.getDispatcher());
+        DebugConfigCommand.register(event.getDispatcher(), event.getBuildContext());
     }
 
     private static void onPlayerReady(OnDatapackSyncEvent event) {
