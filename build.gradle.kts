@@ -53,14 +53,11 @@ allprojects {
     publishing {
         repositories {
             maven {
-                name = "cloudsmith"
-                url = uri("https://maven.cloudsmith.io/thinkingstudio/forgifiedfabricapi/")
-                val releasesRepoUrl = uri("https://maven.cloudsmith.io/thinkingstudio/forgifiedfabricapi/")
-                val snapshotsRepoUrl = uri("https://maven.cloudsmith.io/thinkingstudio/forgifiedfabricapi/")
-                url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl)
+                name = "KTT"
+                url = uri("https://maven.kessokuteatime.work/snapshots")
                 credentials {
-                    username = "tex-true"
-                    password = System.getenv("CLOUDSMITH_MAVEN_TOKEN")
+                    username = System.getenv("KTT_MAVEN_USERNAME")
+                    password = System.getenv("KTT_MAVEN_TOKEN")
                 }
             }
         }
