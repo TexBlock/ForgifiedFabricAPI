@@ -63,6 +63,15 @@ allprojects {
                     password = System.getenv("CLOUDSMITH_MAVEN_TOKEN")
                 }
             }
+
+            maven {
+                name = "KTT"
+                url = uri("https://maven.kessokuteatime.work/snapshots")
+                credentials {
+                    username = System.getenv("KTT_MAVEN_USERNAME")
+                    password = System.getenv("KTT_MAVEN_TOKEN")
+                }
+            }
         }
     }
 
