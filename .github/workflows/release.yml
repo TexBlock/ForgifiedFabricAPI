@@ -68,7 +68,6 @@ jobs:
         env:
           PUBLISH_RELEASE_TYPE: ${{ inputs.release_type }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CLOUDSMITH_MAVEN_TOKEN: ${{ secrets.CLOUDSMITH_MAVEN_TOKEN }}
           KTT_MAVEN_USERNAME: ${{ secrets.KTT_MAVEN_USERNAME }}
           KTT_MAVEN_TOKEN: ${{ secrets.KTT_MAVEN_TOKEN }}
           CHANGELOG: ${{ needs.build.outputs.changelog }}
