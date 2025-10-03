@@ -36,7 +36,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
 public final class NetworkingChannelClientTest implements ClientModInitializer {
-	public static final KeyMapping OPEN = new KeyMapping("key.fabric-networking-api-v1-testmod.open", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_MENU, "key.category.fabric-networking-api-v1-testmod");
+	public static final KeyMapping OPEN = new KeyMapping("key.fabric-networking-api-v1-testmod.open", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_MENU, KeyMapping.Category.MISC);
 	static final Set<ResourceLocation> SUPPORTED_C2S_CHANNELS = new HashSet<>();
 
 	@Override

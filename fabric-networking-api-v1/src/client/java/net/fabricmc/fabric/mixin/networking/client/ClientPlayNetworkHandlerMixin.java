@@ -23,7 +23,6 @@ import org.sinytra.fabric.networking_api.NeoListenableNetworkHandler;
 import org.sinytra.fabric.networking_api.client.NeoClientCommonNetworking;
 import org.sinytra.fabric.networking_api.client.NeoClientPlayNetworking;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -39,26 +38,24 @@ import java.util.Set;
 // We want to apply a bit earlier than other mods which may not use us in order to prevent refCount issues
 @Mixin(value = ClientPacketListener.class, priority = 999)
 abstract class ClientPlayNetworkHandlerMixin extends ClientCommonPacketListenerImpl implements NeoListenableNetworkHandler {
-    @Shadow
-    public abstract Connection getConnection();
 
 	protected ClientPlayNetworkHandlerMixin(Minecraft client, Connection connection, CommonListenerCookie connectionState) {
 		super(client, connection, connectionState);
 	}
 
-    @Inject(method = "<init>", at = @At("RETURN"))
-    private void initAddon(CallbackInfo ci) {
+	@Inject(method = "<init>", at = @At("RETURN"))
+	private void initAddon(CallbackInfo ci) {
         Set<ResourceLocation> channels = ChannelAttributes.getOrCreateCommonChannels(this.getConnection(), this.protocol());
         NeoClientCommonNetworking.onRegisterPacket((ClientPacketListener) (Object) this, channels);
 
         NeoClientPlayNetworking.setTempPacketListener((ClientPacketListener) (Object) this);
         ClientPlayConnectionEvents.INIT.invoker().onPlayInit((ClientPacketListener) (Object) this, this.minecraft);
-    }
+	}
 
-    @Inject(method = "handleLogin", at = @At("RETURN"))
-    private void handleServerPlayReady(ClientboundLoginPacket packet, CallbackInfo ci) {
+	@Inject(method = "handleLogin", at = @At("RETURN"))
+	private void handleServerPlayReady(ClientboundLoginPacket packet, CallbackInfo ci) {
         NeoClientPlayNetworking.onServerReady((ClientPacketListener) (Object) this, this.minecraft);
-    }
+	}
 
     @Override
     public void handleDisconnect() {

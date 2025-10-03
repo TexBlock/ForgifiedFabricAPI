@@ -29,7 +29,7 @@ public class NetworkingEventHooks {
             return;
         }
 
-        if (FMLLoader.isProduction()) {
+        if (FMLLoader.getCurrent().isProduction()) {
             // Only register this command in a dev env
             return;
         }

@@ -19,9 +19,6 @@ package net.fabricmc.fabric.mixin.networking;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.network.PacketListener;
-import net.minecraft.network.ProtocolInfo;
-import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import org.sinytra.fabric.networking_api.NeoListenableNetworkHandler;
 import org.sinytra.fabric.networking_api.server.NeoServerConfigurationNetworking;
 import org.sinytra.fabric.networking_api.server.NeoServerPlayNetworking;
@@ -30,14 +27,18 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.network.Connection;
+import net.minecraft.network.PacketListener;
+import net.minecraft.network.ProtocolInfo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.network.ServerCommonPacketListenerImpl;
+import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 
 // We want to apply a bit earlier than other mods which may not use us in order to prevent refCount issues
 @Mixin(value = ServerGamePacketListenerImpl.class, priority = 999)
 abstract class ServerPlayNetworkHandlerMixin extends ServerCommonPacketListenerImpl implements NeoListenableNetworkHandler {
+
 	ServerPlayNetworkHandlerMixin(MinecraftServer server, Connection connection, CommonListenerCookie arg) {
 		super(server, connection, arg);
 	}
@@ -49,18 +50,18 @@ abstract class ServerPlayNetworkHandlerMixin extends ServerCommonPacketListenerI
 
 	@WrapOperation(method = "handleConfigurationAcknowledged", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;setupInboundProtocol(Lnet/minecraft/network/ProtocolInfo;Lnet/minecraft/network/PacketListener;)V"))
 	private <T extends PacketListener> void onAcknowledgeReconfiguration(Connection instance, ProtocolInfo<T> state, T packetListener, Operation<Void> original) {
-		original.call(instance, state, packetListener);
+        original.call(instance, state, packetListener);
 
-		ServerConfigurationPacketListenerImpl networkHandler = (ServerConfigurationPacketListenerImpl) packetListener;
-		NeoServerConfigurationNetworking.setReconfiguring(networkHandler);
+        ServerConfigurationPacketListenerImpl networkHandler = (ServerConfigurationPacketListenerImpl) packetListener;
+        NeoServerConfigurationNetworking.setReconfiguring(networkHandler);
 
-		if (NeoServerPlayNetworking.requestedReconfigure()) {
-			networkHandler.startConfiguration();
-		}
-	}
+        if (NeoServerPlayNetworking.requestedReconfigure()) {
+            networkHandler.startConfiguration();
+        }
+    }
 
-	@Override
-	public void handleDisconnect() {
-		ServerPlayConnectionEvents.DISCONNECT.invoker().onPlayDisconnect((ServerGamePacketListenerImpl) (Object) this, server);
-	}
+    @Override
+    public void handleDisconnect() {
+        ServerPlayConnectionEvents.DISCONNECT.invoker().onPlayDisconnect((ServerGamePacketListenerImpl) (Object) this, server);
+    }
 }

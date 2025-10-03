@@ -108,7 +108,7 @@ public final class NetworkingPlayPacketTest implements ModInitializer {
 
 		PayloadTypeRegistry.playS2C().register(OverlayPacket.ID, OverlayPacket.CODEC);
 
-		if (FMLLoader.getDist().isDedicatedServer()) {
+		if (FMLLoader.getCurrent().getDist().isDedicatedServer()) {
 			PayloadTypeRegistry.playS2C().register(UnknownPayload.ID, UnknownPayload.CODEC);
 		}
 

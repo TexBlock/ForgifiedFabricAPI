@@ -17,6 +17,8 @@
 package net.fabricmc.fabric.mixin.networking.client;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
+import org.sinytra.fabric.networking_api.NeoListenableNetworkHandler;
+import org.sinytra.fabric.networking_api.client.NeoClientConfigurationNetworking;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,12 +29,11 @@ import net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl;
 import net.minecraft.client.multiplayer.CommonListenerCookie;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.configuration.ClientboundFinishConfigurationPacket;
-import org.sinytra.fabric.networking_api.NeoListenableNetworkHandler;
-import org.sinytra.fabric.networking_api.client.NeoClientConfigurationNetworking;
 
 // We want to apply a bit earlier than other mods which may not use us in order to prevent refCount issues
 @Mixin(value = ClientConfigurationPacketListenerImpl.class, priority = 999)
 public abstract class ClientConfigurationNetworkHandlerMixin extends ClientCommonPacketListenerImpl implements NeoListenableNetworkHandler {
+
 	protected ClientConfigurationNetworkHandlerMixin(Minecraft client, Connection connection, CommonListenerCookie connectionState) {
 		super(client, connection, connectionState);
 	}

@@ -18,13 +18,13 @@ package net.fabricmc.fabric.mixin.networking.client;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
 import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.extensions.ICommonPacketListener;
 import org.sinytra.fabric.networking_api.client.NeoClientCommonNetworking;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
 
 import java.util.Set;
 

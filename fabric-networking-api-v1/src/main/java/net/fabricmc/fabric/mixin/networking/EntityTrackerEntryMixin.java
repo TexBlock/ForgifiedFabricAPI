@@ -33,12 +33,12 @@ abstract class EntityTrackerEntryMixin {
 	@Final
 	private Entity entity;
 
-	@Inject(method = "addPairing", at = @At("HEAD"))
+	@Inject(method = "addPairing", at = @At("TAIL"))
 	private void onStartTracking(ServerPlayer player, CallbackInfo ci) {
 		EntityTrackingEvents.START_TRACKING.invoker().onStartTracking(this.entity, player);
 	}
 
-	@Inject(method = "removePairing", at = @At("TAIL"))
+	@Inject(method = "removePairing", at = @At("HEAD"))
 	private void onStopTracking(ServerPlayer player, CallbackInfo ci) {
 		EntityTrackingEvents.STOP_TRACKING.invoker().onStopTracking(this.entity, player);
 	}

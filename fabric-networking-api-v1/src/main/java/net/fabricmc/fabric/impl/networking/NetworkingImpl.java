@@ -22,12 +22,12 @@ public final class NetworkingImpl {
 	/**
 	 * Id of packet used to register supported channels.
 	 */
-	public static final ResourceLocation REGISTER_CHANNEL = ResourceLocation.fromNamespaceAndPath("fabric", "register");
+	public static final ResourceLocation REGISTER_CHANNEL = ResourceLocation.withDefaultNamespace("register");
 
 	/**
 	 * Id of packet used to unregister supported channels.
 	 */
-	public static final ResourceLocation UNREGISTER_CHANNEL = ResourceLocation.fromNamespaceAndPath("fabric", "unregister");
+	public static final ResourceLocation UNREGISTER_CHANNEL = ResourceLocation.withDefaultNamespace("unregister");
 
 	public static boolean isReservedCommonChannel(ResourceLocation channelName) {
 		return channelName.equals(REGISTER_CHANNEL) || channelName.equals(UNREGISTER_CHANNEL);
