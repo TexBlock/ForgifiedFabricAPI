@@ -15,6 +15,7 @@ plugins {
 val implementationVersion: String by project
 val versionMc: String by project
 val versionForge: String by project
+val versionForgifiedFabricLoader: String by project
 
 val githubRepository: String by project
 val publishBranch: String by project
@@ -115,7 +116,9 @@ allprojects {
 }
 
 dependencies {
-
+    // Include Forgified Fabric Loader
+    include("org.sinytra:forgified-fabric-loader:$versionForgifiedFabricLoader:full")
+    api("org.sinytra:forgified-fabric-loader:$versionForgifiedFabricLoader")
 }
 
 val processIncludedJars by tasks.registering(NestableJarGenerationTask::class) {
