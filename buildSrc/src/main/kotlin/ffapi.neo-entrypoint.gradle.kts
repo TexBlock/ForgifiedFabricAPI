@@ -93,14 +93,14 @@ abstract class GenerateForgeModEntrypoint : DefaultTask() {
         val clientEntrypointInit = if (clientEntrypoints.isNotEmpty()) {
             """
                     // Initialize client entrypoints
-                    if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
+                    if (net.neoforged.fml.loading.FMLEnvironment.getDist().isClient()) {
                         ${clientEntrypoints.joinToString(nestedSeparator)}
                     }"""
         } else ""
         val serverEntrypointInit = if (serverEntrypoints.isNotEmpty()) {
             """
                     // Initialize server entrypoints
-                    if (net.neoforged.fml.loading.FMLEnvironment.dist.isDedicatedServer()) {
+                    if (net.neoforged.fml.loading.FMLEnvironment.getDist().isDedicatedServer()) {
                         ${serverEntrypoints.joinToString(nestedSeparator)}
                     }"""
         } else ""
