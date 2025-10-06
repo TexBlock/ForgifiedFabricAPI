@@ -24,13 +24,12 @@ import net.neoforged.neoforge.common.extensions.ICommonPacketListener;
 import org.sinytra.fabric.networking_api.server.NeoServerCommonNetworking;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import net.fabricmc.fabric.impl.networking.NetworkHandlerExtensions;
 import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 
 import java.util.Set;
 
 @Mixin(ServerCommonPacketListenerImpl.class)
-public abstract class ServerCommonNetworkHandlerMixin implements NetworkHandlerExtensions {
+public abstract class ServerCommonNetworkHandlerMixin {
     @WrapOperation(method = "handleCustomPayload", at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/network/registration/NetworkRegistry;onMinecraftRegister(Lnet/minecraft/network/Connection;Ljava/util/Set;)V"))
     public void onCustomPayloadRegisterPacket(Connection connection, Set<ResourceLocation> channels, Operation<Void> original) {
         original.call(connection, channels);
