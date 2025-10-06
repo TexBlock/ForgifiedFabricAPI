@@ -17,7 +17,7 @@ buildscript:
 ```groovy
 repositories {
     maven {
-        url "https://dl.cloudsmith.io/public/thinkingstudio/forgifiedfabricapi/maven/"
+        url "https://maven.kessokuteatime.work/snapshots/"
     }
 }
 dependencies {
