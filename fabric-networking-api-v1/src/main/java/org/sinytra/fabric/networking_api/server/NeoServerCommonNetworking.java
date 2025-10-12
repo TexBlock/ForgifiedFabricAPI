@@ -20,9 +20,9 @@ public class NeoServerCommonNetworking {
         NeoServerPacketSender packetSender = new NeoServerPacketSender(listener.getConnection());
 
         if (protocol == ConnectionProtocol.CONFIGURATION) {
-            listener.getMainThreadEventLoop().execute(() -> S2CConfigurationChannelEvents.REGISTER.invoker().onChannelRegister((ServerConfigurationPacketListenerImpl) listener, packetSender, server, List.copyOf(ids)));
+            listener.getPacketProcessor().scheduleIfPossible(() -> S2CConfigurationChannelEvents.REGISTER.invoker().onChannelRegister((ServerConfigurationPacketListenerImpl) listener, packetSender, server, List.copyOf(ids)));
         } else if (protocol == ConnectionProtocol.PLAY) {
-            listener.getMainThreadEventLoop().execute(() -> S2CPlayChannelEvents.REGISTER.invoker().onChannelRegister((ServerGamePacketListenerImpl) listener, packetSender, server, List.copyOf(ids)));
+            listener.getPacketProcessor().scheduleIfPossible(() -> S2CPlayChannelEvents.REGISTER.invoker().onChannelRegister((ServerGamePacketListenerImpl) listener, packetSender, server, List.copyOf(ids)));
         }
     }
 
@@ -32,9 +32,9 @@ public class NeoServerCommonNetworking {
         NeoServerPacketSender packetSender = new NeoServerPacketSender(listener.getConnection());
 
         if (protocol == ConnectionProtocol.CONFIGURATION) {
-            listener.getMainThreadEventLoop().execute(() -> S2CConfigurationChannelEvents.UNREGISTER.invoker().onChannelUnregister((ServerConfigurationPacketListenerImpl) listener, packetSender, server, List.copyOf(ids)));
+            listener.getPacketProcessor().scheduleIfPossible(() -> S2CConfigurationChannelEvents.UNREGISTER.invoker().onChannelUnregister((ServerConfigurationPacketListenerImpl) listener, packetSender, server, List.copyOf(ids)));
         } else if (protocol == ConnectionProtocol.PLAY) {
-            listener.getMainThreadEventLoop().execute(() -> S2CPlayChannelEvents.UNREGISTER.invoker().onChannelUnregister((ServerGamePacketListenerImpl) listener, packetSender, server, List.copyOf(ids)));
+            listener.getPacketProcessor().scheduleIfPossible(() -> S2CPlayChannelEvents.UNREGISTER.invoker().onChannelUnregister((ServerGamePacketListenerImpl) listener, packetSender, server, List.copyOf(ids)));
         }
     }
 }
