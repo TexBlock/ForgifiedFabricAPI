@@ -5,7 +5,7 @@ issueTrackerURL = "https://github.com/Sinytra/ForgifiedFabricAPI/issues"
 
 [[mods]]
 modId = "fabric_api"
-version = "${file.jarVersion}"
+version = "${version}"
 displayName = "Forgified Fabric API"
 logoFile = "assets/fabric/icon.png"
 authors = "Sinytra, FabricMC"
@@ -29,7 +29,7 @@ side = "BOTH"
 
 [[mods]]
 modId = "forgified_fabric_api"
-version = "${file.jarVersion}"
+version = "${version}"
 displayName = "Forgified Fabric API (dummy)"
 logoFile = "assets/fabric/icon.png"
 authors = "Sinytra, FabricMC"
