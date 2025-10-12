@@ -23,6 +23,7 @@ import org.sinytra.fabric.networking_api.NeoListenableNetworkHandler;
 import org.sinytra.fabric.networking_api.client.NeoClientCommonNetworking;
 import org.sinytra.fabric.networking_api.client.NeoClientPlayNetworking;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
