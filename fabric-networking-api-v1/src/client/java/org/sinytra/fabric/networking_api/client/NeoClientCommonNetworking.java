@@ -17,9 +17,9 @@ public class NeoClientCommonNetworking {
         ConnectionProtocol protocol = listener.protocol();
         List<ResourceLocation> listIds = List.copyOf(ids);
         if (protocol == ConnectionProtocol.CONFIGURATION) {
-            listener.getMainThreadEventLoop().execute(() -> C2SConfigurationChannelEvents.REGISTER.invoker().onChannelRegister((ClientConfigurationPacketListenerImpl) listener, new NeoClientPacketSender(listener.getConnection()), Minecraft.getInstance(), listIds));
+            listener.getPacketProcessor().scheduleIfPossible(() -> C2SConfigurationChannelEvents.REGISTER.invoker().onChannelRegister((ClientConfigurationPacketListenerImpl) listener, new NeoClientPacketSender(listener.getConnection()), Minecraft.getInstance(), listIds));
         } else if (protocol == ConnectionProtocol.PLAY) {
-            listener.getMainThreadEventLoop().execute(() -> C2SPlayChannelEvents.REGISTER.invoker().onChannelRegister((ClientPacketListener) listener, new NeoClientPacketSender(listener.getConnection()), Minecraft.getInstance(), listIds));
+            listener.getPacketProcessor().scheduleIfPossible(() -> C2SPlayChannelEvents.REGISTER.invoker().onChannelRegister((ClientPacketListener) listener, new NeoClientPacketSender(listener.getConnection()), Minecraft.getInstance(), listIds));
         }
     }
 
@@ -27,9 +27,9 @@ public class NeoClientCommonNetworking {
         ConnectionProtocol protocol = listener.protocol();
         List<ResourceLocation> listIds = List.copyOf(ids);
         if (protocol == ConnectionProtocol.CONFIGURATION) {
-            listener.getMainThreadEventLoop().execute(() -> C2SConfigurationChannelEvents.UNREGISTER.invoker().onChannelUnregister((ClientConfigurationPacketListenerImpl) listener, new NeoClientPacketSender(listener.getConnection()), Minecraft.getInstance(), listIds));
+            listener.getPacketProcessor().scheduleIfPossible(() -> C2SConfigurationChannelEvents.UNREGISTER.invoker().onChannelUnregister((ClientConfigurationPacketListenerImpl) listener, new NeoClientPacketSender(listener.getConnection()), Minecraft.getInstance(), listIds));
         } else if (protocol == ConnectionProtocol.PLAY) {
-            listener.getMainThreadEventLoop().execute(() -> C2SPlayChannelEvents.UNREGISTER.invoker().onChannelUnregister((ClientPacketListener) listener, new NeoClientPacketSender(listener.getConnection()), Minecraft.getInstance(), listIds));
+            listener.getPacketProcessor().scheduleIfPossible(() -> C2SPlayChannelEvents.UNREGISTER.invoker().onChannelUnregister((ClientPacketListener) listener, new NeoClientPacketSender(listener.getConnection()), Minecraft.getInstance(), listIds));
         }
     }
 }
