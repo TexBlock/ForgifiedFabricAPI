@@ -73,6 +73,8 @@ allprojects {
     apply(plugin = "java-library")
     apply(plugin = "dev.architectury.loom")
 
+    loom.silentMojangMappingsLicense()
+
     java {
         toolchain.languageVersion.set(JavaLanguageVersion.of(21))
         withSourcesJar()
