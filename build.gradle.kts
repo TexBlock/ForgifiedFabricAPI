@@ -8,7 +8,7 @@ import org.eclipse.jgit.api.Git
 plugins {
     java
     `maven-publish`
-    id("dev.architectury.loom") // Version declared in buildSrc
+    id("band.kessoku.koom") // Version declared in buildSrc
     id("me.modmuss50.mod-publish-plugin") version "0.5.+"
 }
 
@@ -71,7 +71,7 @@ allprojects {
     }
 
     apply(plugin = "java-library")
-    apply(plugin = "dev.architectury.loom")
+    apply(plugin = "band.kessoku.koom")
 
     loom.silentMojangMappingsLicense()
 

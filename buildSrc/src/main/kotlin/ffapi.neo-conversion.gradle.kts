@@ -2,9 +2,9 @@ import com.google.gson.JsonParser
 import com.moandjiezana.toml.TomlWriter
 import dev.architectury.at.AccessTransformSet
 import dev.architectury.at.io.AccessTransformFormats
+import dev.architectury.loom.accesstransformer.Aw2At
+import dev.architectury.loom.util.LfWriter
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
-import net.fabricmc.loom.util.LfWriter
-import net.fabricmc.loom.util.aw2at.Aw2At
 import kotlin.io.path.*
 
 val versionMcCompat: String by rootProject
@@ -168,7 +168,7 @@ abstract class GenerateForgeModMetadata : DefaultTask() {
                     "BOTH"
                 )
             ) + modDependencies
-            val displayTest = when(json.get("environment")?.asString) {
+            val displayTest = when (json.get("environment")?.asString) {
                 "client" -> "IGNORE_ALL_VERSION"
                 "server" -> "IGNORE_SERVER_VERSION"
                 else -> null
@@ -235,7 +235,7 @@ abstract class GenerateForgeModMetadata : DefaultTask() {
             val at = AccessTransformSet.create()
             awPath.bufferedReader().use { at.merge(Aw2At.toAccessTransformSet(it)) }
 
-            LfWriter(atPath.bufferedWriter()).use {  AccessTransformFormats.FML.write(it, at) }
+            LfWriter(atPath.bufferedWriter()).use { AccessTransformFormats.FML.write(it, at) }
         }
     }
 }

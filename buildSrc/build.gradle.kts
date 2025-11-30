@@ -25,10 +25,14 @@ repositories {
         name = "Architectury"
         url = uri("https://maven.architectury.dev/")
     }
+    maven {
+        name = "KessokuTeaTime"
+        url = uri("https://maven.kessokuteatime.work/releases")
+    }
 }
 
 dependencies {
-    implementation("dev.architectury:architectury-loom:1.11-SNAPSHOT")
+    implementation("band.kessoku:koom:1.13-SNAPSHOT")
 
     implementation("net.fabricmc:fabric-loader:0.16.9")
 
