@@ -14,7 +14,6 @@
     "accessor.ChunkMapAccessor",
     "accessor.EntityTrackerAccessor",
     "accessor.NetworkRegistryAccessor",
-    "accessor.ServerChunkLoadingManagerAccessor",
     "accessor.ServerCommonPacketListenerImplAccessor",
     "accessor.ServerLoginPacketListenerImplAccessor"
   ],
