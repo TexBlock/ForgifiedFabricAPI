@@ -18,10 +18,12 @@ package net.fabricmc.fabric.test.networking.login;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.FutureTask;
-import net.minecraft.Util;
-import net.minecraft.resources.ResourceLocation;
+
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
+import net.minecraft.util.Util;
+
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.LoginPacketSender;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -33,8 +35,8 @@ import net.fabricmc.fabric.test.networking.NetworkingTestmods;
 public final class NetworkingLoginQueryTest implements ModInitializer {
 	private static final boolean useLoginDelayTest = System.getProperty("fabric-networking-api-v1.loginDelayTest") != null;
 
-	public static final ResourceLocation GLOBAL_TEST_CHANNEL = NetworkingTestmods.id("global_test_channel");
-	public static final ResourceLocation LOCAL_TEST_CHANNEL = NetworkingTestmods.id("local_test_channel");
+	public static final Identifier GLOBAL_TEST_CHANNEL = NetworkingTestmods.id("global_test_channel");
+	public static final Identifier LOCAL_TEST_CHANNEL = NetworkingTestmods.id("local_test_channel");
 
 	@Override
 	public void onInitialize() {

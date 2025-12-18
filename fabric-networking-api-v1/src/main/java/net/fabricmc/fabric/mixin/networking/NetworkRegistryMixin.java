@@ -12,7 +12,7 @@ import net.minecraft.network.protocol.common.ServerCommonPacketListener;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.extensions.ICommonPacketListener;
 import net.neoforged.neoforge.network.negotiation.NegotiatedNetworkComponent;
 import net.neoforged.neoforge.network.negotiation.NegotiationResult;
@@ -35,7 +35,7 @@ import java.util.Set;
 public class NetworkRegistryMixin {
 
     @Inject(method = "getCodec", at = @At(value = "INVOKE", target = "Lorg/slf4j/Logger;warn(Ljava/lang/String;Ljava/lang/Object;)V", ordinal = 0), cancellable = true)
-    private static void getCodec(ResourceLocation id, ConnectionProtocol protocol, PacketFlow flow, CallbackInfoReturnable<StreamCodec<? super FriendlyByteBuf, ? extends CustomPacketPayload>> cir) {
+    private static void getCodec(Identifier id, ConnectionProtocol protocol, PacketFlow flow, CallbackInfoReturnable<StreamCodec<? super FriendlyByteBuf, ? extends CustomPacketPayload>> cir) {
         PayloadTypeRegistryImpl<? extends FriendlyByteBuf> registry = NeoNetworkRegistrar.getPayloadRegistry(protocol, flow);
         CustomPacketPayload.TypeAndCodec<? extends FriendlyByteBuf, ? extends CustomPacketPayload> fabricCodec = registry.get(id);
         if (fabricCodec != null) {
@@ -44,7 +44,7 @@ public class NetworkRegistryMixin {
     }
 
     @ModifyReturnValue(method = "getCodec", at = @At(value = "RETURN", ordinal = 3))
-    private static StreamCodec<? super FriendlyByteBuf, ? extends CustomPacketPayload> getFabricDynamicCodec(StreamCodec<? super FriendlyByteBuf, ? extends CustomPacketPayload> codec, ResourceLocation id, ConnectionProtocol protocol, PacketFlow flow) {
+    private static StreamCodec<? super FriendlyByteBuf, ? extends CustomPacketPayload> getFabricDynamicCodec(StreamCodec<? super FriendlyByteBuf, ? extends CustomPacketPayload> codec, Identifier id, ConnectionProtocol protocol, PacketFlow flow) {
         if (codec == NeoNetworkRegistrar.DUMMY_CODEC) {
             PayloadTypeRegistryImpl<? extends FriendlyByteBuf> registry = NeoNetworkRegistrar.getPayloadRegistry(protocol, flow);
             CustomPacketPayload.TypeAndCodec<? extends FriendlyByteBuf, ? extends CustomPacketPayload> fabricCodec = registry.get(id);
@@ -67,9 +67,9 @@ public class NetworkRegistryMixin {
             "checkPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/protocol/common/ServerCommonPacketListener;)V",
             "checkPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/protocol/common/ClientCommonPacketListener;)V"
         },
-        at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/network/registration/NetworkRegistry;hasChannel(Lnet/neoforged/neoforge/common/extensions/ICommonPacketListener;Lnet/minecraft/resources/ResourceLocation;)Z")
+        at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/network/registration/NetworkRegistry;hasChannel(Lnet/neoforged/neoforge/common/extensions/ICommonPacketListener;Lnet/minecraft/resources/Identifier;)Z")
     )
-    private static boolean includeFabricChannels(ICommonPacketListener listener, ResourceLocation location, Operation<Boolean> original) {
+    private static boolean includeFabricChannels(ICommonPacketListener listener, Identifier location, Operation<Boolean> original) {
         // TODO Use original args that include the packet
         return original.call(listener, location) || NeoNetworkRegistrar.hasCodecFor(listener.protocol(), listener.flow() == PacketFlow.SERVERBOUND ? PacketFlow.CLIENTBOUND : PacketFlow.SERVERBOUND, location);
     }

@@ -16,21 +16,25 @@
 
 package net.fabricmc.fabric.api.client.networking.v1;
 
+import java.util.Objects;
 import java.util.Set;
 
-import net.minecraft.network.ConnectionProtocol;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
+import org.sinytra.fabric.networking_api.client.NeoClientConfigurationNetworking;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl;
+import net.minecraft.network.ConnectionProtocol;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.thread.BlockableEventLoop;
+
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.thread.BlockableEventLoop;
-import org.sinytra.fabric.networking_api.client.NeoClientConfigurationNetworking;
+import net.fabricmc.fabric.impl.networking.client.ClientNetworkingImpl;
 
 /**
  * Offers access to configuration stage client-side networking functionalities.
@@ -79,10 +83,9 @@ public final class ClientConfigurationNetworking {
 	 * @return the previous handler, or {@code null} if no handler was bound to the channel,
 	 * or it was not registered using {@link #registerGlobalReceiver(CustomPacketPayload.Type, ConfigurationPayloadHandler)}
 	 * @see ClientConfigurationNetworking#registerGlobalReceiver(CustomPacketPayload.Type, ConfigurationPayloadHandler)
-	 * @see ClientConfigurationNetworking#unregisterReceiver(ResourceLocation)
+	 * @see ClientConfigurationNetworking#unregisterReceiver(Identifier)
 	 */
-	@Nullable
-	public static ClientConfigurationNetworking.ConfigurationPayloadHandler<?> unregisterGlobalReceiver(CustomPacketPayload.Type<?> id) {
+	public static ClientConfigurationNetworking.@Nullable ConfigurationPayloadHandler<?> unregisterGlobalReceiver(CustomPacketPayload.Type<?> id) {
 		return NeoClientConfigurationNetworking.unregisterGlobalReceiver(id.id());
 	}
 
@@ -92,7 +95,7 @@ public final class ClientConfigurationNetworking {
 	 *
 	 * @return all channel names which global receivers are registered for.
 	 */
-	public static Set<ResourceLocation> getGlobalReceivers() {
+	public static Set<Identifier> getGlobalReceivers() {
 		return NeoClientConfigurationNetworking.getGlobalReceivers();
 	}
 
@@ -100,9 +103,9 @@ public final class ClientConfigurationNetworking {
 	 * Registers a handler for a packet type.
 	 *
 	 * <p>If a handler is already registered for the {@code type}, this method will return {@code false}, and no change will be made.
-	 * Use {@link #unregisterReceiver(ResourceLocation)} to unregister the existing handler.
+	 * Use {@link #unregisterReceiver(Identifier)} to unregister the existing handler.
 	 *
-	 * <p>For example, if you only register a receiver using this method when a {@linkplain ClientLoginNetworking#registerGlobalReceiver(ResourceLocation, ClientLoginNetworking.LoginQueryRequestHandler)}
+	 * <p>For example, if you only register a receiver using this method when a {@linkplain ClientLoginNetworking#registerGlobalReceiver(Identifier, ClientLoginNetworking.LoginQueryRequestHandler)}
 	 * login query has been received, you should use {@link ClientPlayConnectionEvents#INIT} to register the channel handler.
 	 *
 	 * @param id the payload id
@@ -126,8 +129,7 @@ public final class ClientConfigurationNetworking {
 	 * or it was not registered using {@link #registerReceiver(CustomPacketPayload.Type, ConfigurationPayloadHandler)}
 	 * @throws IllegalStateException if the client is not connected to a server
 	 */
-	@Nullable
-	public static ClientConfigurationNetworking.ConfigurationPayloadHandler<?> unregisterReceiver(ResourceLocation id) {
+	public static ClientConfigurationNetworking.@Nullable ConfigurationPayloadHandler<?> unregisterReceiver(Identifier id) {
 		return NeoClientConfigurationNetworking.unregisterReceiver(id);
 	}
 
@@ -137,7 +139,7 @@ public final class ClientConfigurationNetworking {
 	 * @return All the channel names that the client can receive packets on
 	 * @throws IllegalStateException if the client is not connected to a server
 	 */
-	public static Set<ResourceLocation> getReceived() throws IllegalStateException {
+	public static Set<Identifier> getReceived() throws IllegalStateException {
 		return NeoClientConfigurationNetworking.getReceived();
 	}
 
@@ -147,7 +149,7 @@ public final class ClientConfigurationNetworking {
 	 * @return All the channel names the connected server declared the ability to receive a packets on
 	 * @throws IllegalStateException if the client is not connected to a server
 	 */
-	public static Set<ResourceLocation> getSendable() throws IllegalStateException {
+	public static Set<Identifier> getSendable() throws IllegalStateException {
 		return NeoClientConfigurationNetworking.getSendable();
 	}
 
@@ -158,7 +160,7 @@ public final class ClientConfigurationNetworking {
 	 * @return {@code true} if the connected server has declared the ability to receive a packet on the specified channel.
 	 * False if the client is not in game.
 	 */
-	public static boolean canSend(ResourceLocation channelName) throws IllegalArgumentException {
+	public static boolean canSend(Identifier channelName) throws IllegalArgumentException {
 		if (Minecraft.getInstance().getConnection() != null && Minecraft.getInstance().getConnection().protocol() == ConnectionProtocol.CONFIGURATION) {
 			return NeoClientConfigurationNetworking.canSend(channelName);
 		}

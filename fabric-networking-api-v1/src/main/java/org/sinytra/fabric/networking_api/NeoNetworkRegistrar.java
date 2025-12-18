@@ -7,7 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.extensions.ICommonPacketListener;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
@@ -32,13 +32,13 @@ public class NeoNetworkRegistrar {
 
     private final ConnectionProtocol protocol;
 
-    private final Map<ResourceLocation, NeoPayloadHandler<?>> registeredPayloads = new ConcurrentHashMap<>();
+    private final Map<Identifier, NeoPayloadHandler<?>> registeredPayloads = new ConcurrentHashMap<>();
 
     public NeoNetworkRegistrar(ConnectionProtocol protocol) {
         this.protocol = protocol;
     }
 
-    public static boolean hasCodecFor(ConnectionProtocol protocol, PacketFlow flow, ResourceLocation id) {
+    public static boolean hasCodecFor(ConnectionProtocol protocol, PacketFlow flow, Identifier id) {
         PayloadTypeRegistryImpl<? extends FriendlyByteBuf> registry = getPayloadRegistry(protocol, flow);
         return registry.get(id) != null;
     }
@@ -58,12 +58,12 @@ public class NeoNetworkRegistrar {
         return neoHandler.registerGlobalHandler(packetFlow, handler, ctxFactory, consumer);
     }
 
-    public <HANDLER> HANDLER unregisterGlobalReceiver(ResourceLocation id, PacketFlow flow) {
+    public <HANDLER> HANDLER unregisterGlobalReceiver(Identifier id, PacketFlow flow) {
         NeoPayloadHandler<?> neoHandler = registeredPayloads.get(id);
         return neoHandler != null ? neoHandler.unregisterGlobalHandler(flow) : null;
     }
 
-    public Set<ResourceLocation> getGlobalReceivers(PacketFlow flow) {
+    public Set<Identifier> getGlobalReceivers(PacketFlow flow) {
         return registeredPayloads.entrySet().stream()
             .filter(e -> e.getValue().hasGlobalHandler(flow))
             .map(Map.Entry::getKey)
@@ -75,19 +75,19 @@ public class NeoNetworkRegistrar {
         return neoHandler.registerLocalReceiver(listener, handler, ctxFactory, consumer);
     }
 
-    public <HANDLER> HANDLER unregisterLocalReceiver(ResourceLocation id, ICommonPacketListener listener) {
+    public <HANDLER> HANDLER unregisterLocalReceiver(Identifier id, ICommonPacketListener listener) {
         NeoPayloadHandler<?> neoHandler = registeredPayloads.get(id);
         return neoHandler != null ? neoHandler.unregisterLocalHandler(listener) : null;
     }
 
-    public Set<ResourceLocation> getLocalReceivers(ICommonPacketListener listener) {
+    public Set<Identifier> getLocalReceivers(ICommonPacketListener listener) {
         return registeredPayloads.entrySet().stream()
             .filter(e -> e.getValue().hasLocalHandler(listener))
             .map(Map.Entry::getKey)
             .collect(Collectors.toSet());
     }
 
-    public Set<ResourceLocation> getLocalSendable(ICommonPacketListener listener) {
+    public Set<Identifier> getLocalSendable(ICommonPacketListener listener) {
         NetworkPayloadSetup payloadSetup = ChannelAttributes.getPayloadSetup(listener.getConnection());
         if (payloadSetup == null) {
             return Set.of();

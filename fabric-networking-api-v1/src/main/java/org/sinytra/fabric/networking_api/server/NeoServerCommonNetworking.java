@@ -3,7 +3,7 @@ package org.sinytra.fabric.networking_api.server;
 import net.fabricmc.fabric.api.networking.v1.S2CConfigurationChannelEvents;
 import net.fabricmc.fabric.api.networking.v1.S2CPlayChannelEvents;
 import net.minecraft.network.ConnectionProtocol;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 public class NeoServerCommonNetworking {
-    public static void onRegisterPacket(ICommonPacketListener listener, Set<ResourceLocation> ids) {
+    public static void onRegisterPacket(ICommonPacketListener listener, Set<Identifier> ids) {
         ConnectionProtocol protocol = listener.protocol();
         MinecraftServer server = ((ServerCommonPacketListenerImpl) listener).server;
         NeoServerPacketSender packetSender = new NeoServerPacketSender(listener.getConnection());
@@ -26,7 +26,7 @@ public class NeoServerCommonNetworking {
         }
     }
 
-    public static void onUnregisterPacket(ICommonPacketListener listener, Set<ResourceLocation> ids) {
+    public static void onUnregisterPacket(ICommonPacketListener listener, Set<Identifier> ids) {
         ConnectionProtocol protocol = listener.protocol();
         MinecraftServer server = ((ServerCommonPacketListenerImpl) listener).server;
         NeoServerPacketSender packetSender = new NeoServerPacketSender(listener.getConnection());

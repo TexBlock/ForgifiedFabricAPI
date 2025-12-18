@@ -22,7 +22,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 final class ChannelList extends AbstractSelectionList<ChannelList.Entry> {
 	ChannelList(Minecraft client, int width, int height, int top, int itemHeight) {
@@ -30,7 +30,7 @@ final class ChannelList extends AbstractSelectionList<ChannelList.Entry> {
 	}
 
 	@Override
-	public int addEntry(net.fabricmc.fabric.test.networking.client.channeltest.ChannelList.Entry entry) {
+	public int addEntry(Entry entry) {
 		return super.addEntry(entry);
 	}
 
@@ -43,16 +43,16 @@ final class ChannelList extends AbstractSelectionList<ChannelList.Entry> {
 		// TODO seems to be possibly accessibility related
 	}
 
-	class Entry extends AbstractSelectionList.Entry<net.fabricmc.fabric.test.networking.client.channeltest.ChannelList.Entry> {
-		private final ResourceLocation channel;
+	class Entry extends AbstractSelectionList.Entry<Entry> {
+		private final Identifier channel;
 
-		Entry(ResourceLocation channel) {
+		Entry(Identifier channel) {
 			this.channel = channel;
 		}
 
-        @Override
-        public void renderContent(GuiGraphics drawContext, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            drawContext.setTooltipForNextFrame(ChannelList.this.minecraft.font, Component.literal(this.channel.toString()).withStyle(ChatFormatting.WHITE), getContentX(), getContentY());
-        }
-    }
+		@Override
+		public void renderContent(GuiGraphics drawContext, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			drawContext.setTooltipForNextFrame(ChannelList.this.minecraft.font, Component.literal(this.channel.toString()).withStyle(ChatFormatting.WHITE), getContentX(), getContentY());
+		}
+	}
 }

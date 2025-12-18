@@ -17,10 +17,9 @@ tasks.withType(GenerateModuleMetadata) {
 
 // Avoid configuration ordering issues by creating the catalog entries during task execution time
 tasks.register('configureCatalog') {
-	doFirst {
-		doConfigureCatalog()
-	}
+	doConfigureCatalog()
 }
+
 tasks.named('generateCatalogAsToml') {
 	dependsOn('configureCatalog')
 }

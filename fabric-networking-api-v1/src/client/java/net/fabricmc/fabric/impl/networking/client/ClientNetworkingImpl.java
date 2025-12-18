@@ -18,12 +18,8 @@ package net.fabricmc.fabric.impl.networking.client;
 
 import java.util.Objects;
 
-import org.jetbrains.annotations.Nullable;
-import net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking;
-import net.fabricmc.fabric.impl.networking.GlobalReceiverRegistry;
-import net.fabricmc.fabric.impl.networking.NetworkHandlerExtensions;
-import net.fabricmc.fabric.mixin.networking.client.accessor.ConnectScreenAccessor;
-import net.fabricmc.fabric.mixin.networking.client.accessor.MinecraftClientAccessor;
+import org.jspecify.annotations.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConnectScreen;
 import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl;
@@ -34,6 +30,12 @@ import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.ServerCommonPacketListener;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+
+import net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking;
+import net.fabricmc.fabric.impl.networking.GlobalReceiverRegistry;
+import net.fabricmc.fabric.impl.networking.NetworkHandlerExtensions;
+import net.fabricmc.fabric.mixin.networking.client.accessor.ConnectScreenAccessor;
+import net.fabricmc.fabric.mixin.networking.client.accessor.MinecraftAccessor;
 
 public final class ClientNetworkingImpl {
 	public static final GlobalReceiverRegistry<ClientLoginNetworking.LoginQueryRequestHandler> LOGIN = new GlobalReceiverRegistry<>(PacketFlow.CLIENTBOUND, ConnectionProtocol.LOGIN, null);
@@ -54,7 +56,7 @@ public final class ClientNetworkingImpl {
 	 */
 	@Nullable
 	public static Connection getLoginConnection() {
-		final Connection connection = ((MinecraftClientAccessor) Minecraft.getInstance()).getConnection();
+		final Connection connection = ((MinecraftAccessor) Minecraft.getInstance()).getConnection();
 
 		// Check if we are connecting to an integrated server. This will set the field on MinecraftClient
 		if (connection != null) {

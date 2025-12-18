@@ -20,17 +20,19 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
+import org.sinytra.fabric.networking_api.server.NeoServerConfigurationNetworking;
+
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.minecraft.util.thread.BlockableEventLoop;
+
 import net.fabricmc.fabric.impl.networking.server.ServerNetworkingImpl;
-import net.fabricmc.fabric.mixin.networking.accessor.ServerCommonNetworkHandlerAccessor;
-import org.sinytra.fabric.networking_api.server.NeoServerConfigurationNetworking;
+import net.fabricmc.fabric.mixin.networking.accessor.ServerCommonPacketListenerImplAccessor;
 
 /**
  * Offers access to configuration stage server-side networking functionalities.
@@ -55,13 +57,13 @@ public final class ServerConfigurationNetworking {
 	 * A global receiver is registered to all connections, in the present and future.
 	 *
 	 * <p>If a handler is already registered for the {@code type}, this method will return {@code false}, and no change will be made.
-	 * Use {@link #unregisterReceiver(ServerConfigurationPacketListenerImpl, ResourceLocation)} to unregister the existing handler.
+	 * Use {@link #unregisterReceiver(ServerConfigurationPacketListenerImpl, Identifier)} to unregister the existing handler.
 	 *
 	 * @param type the packet type
 	 * @param handler the handler
 	 * @return {@code false} if a handler is already registered to the channel
 	 * @throws IllegalArgumentException if the codec for {@code type} has not been {@linkplain PayloadTypeRegistry#configurationC2S() registered} yet
-	 * @see ServerConfigurationNetworking#unregisterGlobalReceiver(ResourceLocation)
+	 * @see ServerConfigurationNetworking#unregisterGlobalReceiver(Identifier)
 	 * @see ServerConfigurationNetworking#registerReceiver(ServerConfigurationPacketListenerImpl, CustomPacketPayload.Type, ConfigurationPacketHandler)
 	 */
 	public static <T extends CustomPacketPayload> boolean registerGlobalReceiver(CustomPacketPayload.Type<T> type, ConfigurationPacketHandler<T> handler) {
@@ -78,10 +80,9 @@ public final class ServerConfigurationNetworking {
 	 * @return the previous handler, or {@code null} if no handler was bound to the channel,
 	 * or it was not registered using {@link #registerGlobalReceiver(CustomPacketPayload.Type, ConfigurationPacketHandler)}
 	 * @see ServerConfigurationNetworking#registerGlobalReceiver(CustomPacketPayload.Type, ConfigurationPacketHandler)
-	 * @see ServerConfigurationNetworking#unregisterReceiver(ServerConfigurationPacketListenerImpl, ResourceLocation)
+	 * @see ServerConfigurationNetworking#unregisterReceiver(ServerConfigurationPacketListenerImpl, Identifier)
 	 */
-	@Nullable
-	public static ServerConfigurationNetworking.ConfigurationPacketHandler<?> unregisterGlobalReceiver(ResourceLocation id) {
+	public static ServerConfigurationNetworking.@Nullable ConfigurationPacketHandler<?> unregisterGlobalReceiver(Identifier id) {
 		return NeoServerConfigurationNetworking.unregisterGlobalReceiver(id);
 	}
 
@@ -91,7 +92,7 @@ public final class ServerConfigurationNetworking {
 	 *
 	 * @return all channel names which global receivers are registered for.
 	 */
-	public static Set<ResourceLocation> getGlobalReceivers() {
+	public static Set<Identifier> getGlobalReceivers() {
 		return NeoServerConfigurationNetworking.getGlobalReceivers();
 	}
 
@@ -101,7 +102,7 @@ public final class ServerConfigurationNetworking {
 	 * the channel handler will only be applied to the client represented by the {@link ServerConfigurationPacketListenerImpl}.
 	 *
 	 * <p>If a handler is already registered for the {@code type}, this method will return {@code false}, and no change will be made.
-	 * Use {@link #unregisterReceiver(ServerConfigurationPacketListenerImpl, ResourceLocation)} to unregister the existing handler.
+	 * Use {@link #unregisterReceiver(ServerConfigurationPacketListenerImpl, Identifier)} to unregister the existing handler.
 	 *
 	 * @param networkHandler the network handler
 	 * @param type the packet type
@@ -123,8 +124,7 @@ public final class ServerConfigurationNetworking {
 	 * @return the previous handler, or {@code null} if no handler was bound to the channel,
 	 * or it was not registered using {@link #registerReceiver(ServerConfigurationPacketListenerImpl, CustomPacketPayload.Type, ConfigurationPacketHandler)}
 	 */
-	@Nullable
-	public static ServerConfigurationNetworking.ConfigurationPacketHandler<?> unregisterReceiver(ServerConfigurationPacketListenerImpl networkHandler, ResourceLocation id) {
+	public static ServerConfigurationNetworking.@Nullable ConfigurationPacketHandler<?> unregisterReceiver(ServerConfigurationPacketListenerImpl networkHandler, Identifier id) {
 		return NeoServerConfigurationNetworking.unregisterReceiver(networkHandler, id);
 	}
 
@@ -134,7 +134,7 @@ public final class ServerConfigurationNetworking {
 	 * @param handler the network handler
 	 * @return All the channel names that the server can receive packets on
 	 */
-	public static Set<ResourceLocation> getReceived(ServerConfigurationPacketListenerImpl handler) {
+	public static Set<Identifier> getReceived(ServerConfigurationPacketListenerImpl handler) {
 		Objects.requireNonNull(handler, "Server configuration network handler cannot be null");
 
 		return NeoServerConfigurationNetworking.getReceived(handler);
@@ -146,7 +146,7 @@ public final class ServerConfigurationNetworking {
 	 * @param handler the network handler
 	 * @return {@code true} if the connected client has declared the ability to receive a packet on the specified channel
 	 */
-	public static Set<ResourceLocation> getSendable(ServerConfigurationPacketListenerImpl handler) {
+	public static Set<Identifier> getSendable(ServerConfigurationPacketListenerImpl handler) {
 		Objects.requireNonNull(handler, "Server configuration network handler cannot be null");
 
 		return NeoServerConfigurationNetworking.getSendable(handler);
@@ -159,7 +159,7 @@ public final class ServerConfigurationNetworking {
 	 * @param channelName the channel name
 	 * @return {@code true} if the connected client has declared the ability to receive a packet on the specified channel
 	 */
-	public static boolean canSend(ServerConfigurationPacketListenerImpl handler, ResourceLocation channelName) {
+	public static boolean canSend(ServerConfigurationPacketListenerImpl handler, Identifier channelName) {
 		Objects.requireNonNull(handler, "Server configuration network handler cannot be null");
 		Objects.requireNonNull(channelName, "Channel name cannot be null");
 
@@ -231,7 +231,7 @@ public final class ServerConfigurationNetworking {
 	public static MinecraftServer getServer(ServerConfigurationPacketListenerImpl handler) {
 		Objects.requireNonNull(handler, "Network handler cannot be null");
 
-		return ((ServerCommonNetworkHandlerAccessor) handler).getServer();
+		return ((ServerCommonPacketListenerImplAccessor) handler).getServer();
 	}
 
 	/**

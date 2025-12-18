@@ -20,23 +20,27 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.Nullable;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import org.jspecify.annotations.Nullable;
+
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 
 public class PayloadTypeRegistryImpl<B extends FriendlyByteBuf> implements PayloadTypeRegistry<B> {
 	public static final PayloadTypeRegistryImpl<FriendlyByteBuf> CONFIGURATION_C2S = new PayloadTypeRegistryImpl<>(ConnectionProtocol.CONFIGURATION, PacketFlow.SERVERBOUND);
 	public static final PayloadTypeRegistryImpl<FriendlyByteBuf> CONFIGURATION_S2C = new PayloadTypeRegistryImpl<>(ConnectionProtocol.CONFIGURATION, PacketFlow.CLIENTBOUND);
 	public static final PayloadTypeRegistryImpl<RegistryFriendlyByteBuf> PLAY_C2S = new PayloadTypeRegistryImpl<>(ConnectionProtocol.PLAY, PacketFlow.SERVERBOUND);
 	public static final PayloadTypeRegistryImpl<RegistryFriendlyByteBuf> PLAY_S2C = new PayloadTypeRegistryImpl<>(ConnectionProtocol.PLAY, PacketFlow.CLIENTBOUND);
-
-	private final Map<ResourceLocation, CustomPacketPayload.TypeAndCodec<B, ? extends CustomPacketPayload>> packetTypes = new HashMap<>();
+	private final Map<Identifier, CustomPacketPayload.TypeAndCodec<B, ? extends CustomPacketPayload>> packetTypes = new HashMap<>();
+	private final Object2IntMap<Identifier> maxPacketSize = new Object2IntOpenHashMap<>();
 	private final ConnectionProtocol state;
 	private final PacketFlow side;
 
@@ -60,13 +64,11 @@ public class PayloadTypeRegistryImpl<B extends FriendlyByteBuf> implements Paylo
 		return payloadType;
 	}
 
-	@Nullable
-	public CustomPacketPayload.TypeAndCodec<B, ? extends CustomPacketPayload> get(ResourceLocation id) {
+	public CustomPacketPayload.@Nullable TypeAndCodec<B, ? extends CustomPacketPayload> get(Identifier id) {
 		return packetTypes.get(id);
 	}
 
-	@Nullable
-	public <T extends CustomPacketPayload> CustomPacketPayload.TypeAndCodec<B, T> get(CustomPacketPayload.Type<T> id) {
+	public <T extends CustomPacketPayload> CustomPacketPayload.@Nullable TypeAndCodec<B, T> get(CustomPacketPayload.Type<T> id) {
 		//noinspection unchecked
 		return (CustomPacketPayload.TypeAndCodec<B, T>) packetTypes.get(id.id());
 	}

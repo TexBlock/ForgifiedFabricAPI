@@ -24,10 +24,12 @@ import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.minecraft.resources.Identifier;
+
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.impl.base.toposort.NodeSorting;
-import net.minecraft.resources.ResourceLocation;
 
 public class EventTests {
 	private static final Logger LOGGER = LoggerFactory.getLogger("fabric-api-base");
@@ -80,8 +82,8 @@ public class EventTests {
 	}
 
 	private static void testMultipleDefaultPhases() {
-		ResourceLocation first = ResourceLocation.fromNamespaceAndPath("fabric", "first");
-		ResourceLocation second = ResourceLocation.fromNamespaceAndPath("fabric", "second");
+		Identifier first = Identifier.fromNamespaceAndPath("fabric", "first");
+		Identifier second = Identifier.fromNamespaceAndPath("fabric", "second");
 		Event<Test> event = EventFactory.createWithPhases(Test.class, INVOKER_FACTORY, first, second, Event.DEFAULT_PHASE);
 
 		event.register(second, ensureOrder(1));
@@ -98,10 +100,10 @@ public class EventTests {
 	private static void testAddedPhases() {
 		Event<Test> event = createEvent();
 
-		ResourceLocation veryEarly = ResourceLocation.fromNamespaceAndPath("fabric", "very_early");
-		ResourceLocation early = ResourceLocation.fromNamespaceAndPath("fabric", "early");
-		ResourceLocation late = ResourceLocation.fromNamespaceAndPath("fabric", "late");
-		ResourceLocation veryLate = ResourceLocation.fromNamespaceAndPath("fabric", "very_late");
+		Identifier veryEarly = Identifier.fromNamespaceAndPath("fabric", "very_early");
+		Identifier early = Identifier.fromNamespaceAndPath("fabric", "early");
+		Identifier late = Identifier.fromNamespaceAndPath("fabric", "late");
+		Identifier veryLate = Identifier.fromNamespaceAndPath("fabric", "very_late");
 
 		event.addPhaseOrdering(veryEarly, early);
 		event.addPhaseOrdering(early, Event.DEFAULT_PHASE);
@@ -129,11 +131,11 @@ public class EventTests {
 	private static void testCycle() {
 		Event<Test> event = createEvent();
 
-		ResourceLocation a = ResourceLocation.fromNamespaceAndPath("fabric", "a");
-		ResourceLocation b1 = ResourceLocation.fromNamespaceAndPath("fabric", "b1");
-		ResourceLocation b2 = ResourceLocation.fromNamespaceAndPath("fabric", "b2");
-		ResourceLocation b3 = ResourceLocation.fromNamespaceAndPath("fabric", "b3");
-		ResourceLocation c = Event.DEFAULT_PHASE;
+		Identifier a = Identifier.fromNamespaceAndPath("fabric", "a");
+		Identifier b1 = Identifier.fromNamespaceAndPath("fabric", "b1");
+		Identifier b2 = Identifier.fromNamespaceAndPath("fabric", "b2");
+		Identifier b3 = Identifier.fromNamespaceAndPath("fabric", "b3");
+		Identifier c = Event.DEFAULT_PHASE;
 
 		// A always first and C always last.
 		event.register(a, ensureOrder(0));
@@ -182,13 +184,13 @@ public class EventTests {
 	 * We get for the final order: [a, d, e, cycle [b, y, z], f].
 	 */
 	private static void testDeterministicOrdering() {
-		ResourceLocation a = ResourceLocation.fromNamespaceAndPath("fabric", "a");
-		ResourceLocation b = ResourceLocation.fromNamespaceAndPath("fabric", "b");
-		ResourceLocation d = ResourceLocation.fromNamespaceAndPath("fabric", "d");
-		ResourceLocation e = ResourceLocation.fromNamespaceAndPath("fabric", "e");
-		ResourceLocation f = ResourceLocation.fromNamespaceAndPath("fabric", "f");
-		ResourceLocation y = ResourceLocation.fromNamespaceAndPath("fabric", "y");
-		ResourceLocation z = ResourceLocation.fromNamespaceAndPath("fabric", "z");
+		Identifier a = Identifier.fromNamespaceAndPath("fabric", "a");
+		Identifier b = Identifier.fromNamespaceAndPath("fabric", "b");
+		Identifier d = Identifier.fromNamespaceAndPath("fabric", "d");
+		Identifier e = Identifier.fromNamespaceAndPath("fabric", "e");
+		Identifier f = Identifier.fromNamespaceAndPath("fabric", "f");
+		Identifier y = Identifier.fromNamespaceAndPath("fabric", "y");
+		Identifier z = Identifier.fromNamespaceAndPath("fabric", "z");
 
 		List<Consumer<Event<Test>>> dependencies = List.of(
 				ev -> ev.addPhaseOrdering(a, z),
@@ -227,11 +229,11 @@ public class EventTests {
 	 * </pre>
 	 */
 	private static void testTwoCycles() {
-		ResourceLocation a = ResourceLocation.fromNamespaceAndPath("fabric", "a");
-		ResourceLocation b = ResourceLocation.fromNamespaceAndPath("fabric", "b");
-		ResourceLocation c = ResourceLocation.fromNamespaceAndPath("fabric", "c");
-		ResourceLocation d = ResourceLocation.fromNamespaceAndPath("fabric", "d");
-		ResourceLocation e = ResourceLocation.fromNamespaceAndPath("fabric", "e");
+		Identifier a = Identifier.fromNamespaceAndPath("fabric", "a");
+		Identifier b = Identifier.fromNamespaceAndPath("fabric", "b");
+		Identifier c = Identifier.fromNamespaceAndPath("fabric", "c");
+		Identifier d = Identifier.fromNamespaceAndPath("fabric", "d");
+		Identifier e = Identifier.fromNamespaceAndPath("fabric", "e");
 
 		List<Consumer<Event<Test>>> dependencies = List.of(
 				ev -> ev.addPhaseOrdering(e, a),

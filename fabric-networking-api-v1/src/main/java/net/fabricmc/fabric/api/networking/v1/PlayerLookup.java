@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.MinecraftServer;
@@ -33,8 +34,9 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.ChunkSource;
 import net.minecraft.world.phys.Vec3;
+
+import net.fabricmc.fabric.mixin.networking.accessor.ChunkMapAccessor;
 import net.fabricmc.fabric.mixin.networking.accessor.EntityTrackerAccessor;
-import net.fabricmc.fabric.mixin.networking.accessor.ServerChunkLoadingManagerAccessor;
 
 /**
  * Helper methods to lookup players in a server.
@@ -111,7 +113,7 @@ public final class PlayerLookup {
 
 		if (manager instanceof ServerChunkCache) {
 			ChunkMap chunkLoadingManager = ((ServerChunkCache) manager).chunkMap;
-			EntityTrackerAccessor tracker = ((ServerChunkLoadingManagerAccessor) chunkLoadingManager).getEntityMap().get(entity.getId());
+			EntityTrackerAccessor tracker = ((ChunkMapAccessor) chunkLoadingManager).getEntityTrackers().get(entity.getId());
 
 			// return an immutable collection to guard against accidental removals.
 			if (tracker != null) {

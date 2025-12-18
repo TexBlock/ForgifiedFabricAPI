@@ -7,20 +7,21 @@
     "EntityTrackerEntryMixin",
     "GenericPacketSplitterMixin",
     "LoginQueryRequestS2CPacketMixin",
-    "LoginQueryResponseC2SPacketMixin",
     "NetworkRegistryMixin",
-    "RegistryByteBufMixin",
-    "ServerCommonNetworkHandlerMixin",
-    "ServerConfigurationNetworkHandlerMixin",
-    "ServerLoginNetworkHandlerMixin",
-    "ServerPlayNetworkHandlerMixin",
+    "RegistryFriendlyByteBufMixin",
+    "ServerConfigurationPacketListenerImplMixin",
+    "ServerLoginPacketListenerImplMixin",
+    "accessor.ChunkMapAccessor",
     "accessor.EntityTrackerAccessor",
     "accessor.NetworkRegistryAccessor",
     "accessor.ServerChunkLoadingManagerAccessor",
-    "accessor.ServerCommonNetworkHandlerAccessor",
-    "accessor.ServerLoginNetworkHandlerAccessor"
+    "accessor.ServerCommonPacketListenerImplAccessor",
+    "accessor.ServerLoginPacketListenerImplAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
   }
 }

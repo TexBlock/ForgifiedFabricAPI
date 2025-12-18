@@ -6,16 +6,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.ConnectionProtocol;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.extensions.ICommonPacketListener;
 
 import java.util.List;
 import java.util.Set;
 
 public class NeoClientCommonNetworking {
-    public static void onRegisterPacket(ICommonPacketListener listener, Set<ResourceLocation> ids) {
+    public static void onRegisterPacket(ICommonPacketListener listener, Set<Identifier> ids) {
         ConnectionProtocol protocol = listener.protocol();
-        List<ResourceLocation> listIds = List.copyOf(ids);
+        List<Identifier> listIds = List.copyOf(ids);
         if (protocol == ConnectionProtocol.CONFIGURATION) {
             listener.getPacketProcessor().scheduleIfPossible(() -> C2SConfigurationChannelEvents.REGISTER.invoker().onChannelRegister((ClientConfigurationPacketListenerImpl) listener, new NeoClientPacketSender(listener.getConnection()), Minecraft.getInstance(), listIds));
         } else if (protocol == ConnectionProtocol.PLAY) {
@@ -23,9 +23,9 @@ public class NeoClientCommonNetworking {
         }
     }
 
-    public static void onUnregisterPacket(ICommonPacketListener listener, Set<ResourceLocation> ids) {
+    public static void onUnregisterPacket(ICommonPacketListener listener, Set<Identifier> ids) {
         ConnectionProtocol protocol = listener.protocol();
-        List<ResourceLocation> listIds = List.copyOf(ids);
+        List<Identifier> listIds = List.copyOf(ids);
         if (protocol == ConnectionProtocol.CONFIGURATION) {
             listener.getPacketProcessor().scheduleIfPossible(() -> C2SConfigurationChannelEvents.UNREGISTER.invoker().onChannelUnregister((ClientConfigurationPacketListenerImpl) listener, new NeoClientPacketSender(listener.getConnection()), Minecraft.getInstance(), listIds));
         } else if (protocol == ConnectionProtocol.PLAY) {

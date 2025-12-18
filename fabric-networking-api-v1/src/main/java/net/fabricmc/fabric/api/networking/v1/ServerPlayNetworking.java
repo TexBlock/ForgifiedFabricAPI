@@ -20,16 +20,18 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
+import org.sinytra.fabric.networking_api.server.NeoServerPlayNetworking;
+
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+
 import net.fabricmc.fabric.impl.networking.server.ServerNetworkingImpl;
-import org.sinytra.fabric.networking_api.server.NeoServerPlayNetworking;
 
 /**
  * Offers access to play stage server-side networking functionalities.
@@ -65,13 +67,13 @@ public final class ServerPlayNetworking {
 	 * A global receiver is registered to all connections, in the present and future.
 	 *
 	 * <p>If a handler is already registered for the {@code type}, this method will return {@code false}, and no change will be made.
-	 * Use {@link #unregisterGlobalReceiver(ResourceLocation)} to unregister the existing handler.
+	 * Use {@link #unregisterGlobalReceiver(Identifier)} to unregister the existing handler.
 	 *
 	 * @param type the packet type
 	 * @param handler the handler
 	 * @return {@code false} if a handler is already registered to the channel
 	 * @throws IllegalArgumentException if the codec for {@code type} has not been {@linkplain PayloadTypeRegistry#playC2S() registered} yet
-	 * @see ServerPlayNetworking#unregisterGlobalReceiver(ResourceLocation)
+	 * @see ServerPlayNetworking#unregisterGlobalReceiver(Identifier)
 	 */
 	public static <T extends CustomPacketPayload> boolean registerGlobalReceiver(CustomPacketPayload.Type<T> type, PlayPayloadHandler<T> handler) {
 		return NeoServerPlayNetworking.registerGlobalReceiver(type, handler);
@@ -87,10 +89,9 @@ public final class ServerPlayNetworking {
 	 * @return the previous handler, or {@code null} if no handler was bound to the channel,
 	 * or it was not registered using {@link #registerGlobalReceiver(CustomPacketPayload.Type, PlayPayloadHandler)}
 	 * @see ServerPlayNetworking#registerGlobalReceiver(CustomPacketPayload.Type, PlayPayloadHandler)
-	 * @see ServerPlayNetworking#unregisterReceiver(ServerGamePacketListenerImpl, ResourceLocation)
+	 * @see ServerPlayNetworking#unregisterReceiver(ServerGamePacketListenerImpl, Identifier)
 	 */
-	@Nullable
-	public static ServerPlayNetworking.PlayPayloadHandler<?> unregisterGlobalReceiver(ResourceLocation id) {
+	public static ServerPlayNetworking.@Nullable PlayPayloadHandler<?> unregisterGlobalReceiver(Identifier id) {
 		return NeoServerPlayNetworking.unregisterGlobalReceiver(id);
 	}
 
@@ -100,7 +101,7 @@ public final class ServerPlayNetworking {
 	 *
 	 * @return all channel names which global receivers are registered for.
 	 */
-	public static Set<ResourceLocation> getGlobalReceivers() {
+	public static Set<Identifier> getGlobalReceivers() {
 		return NeoServerPlayNetworking.getGlobalReceivers();
 	}
 
@@ -109,11 +110,11 @@ public final class ServerPlayNetworking {
 	 * This method differs from {@link ServerPlayNetworking#registerGlobalReceiver(CustomPacketPayload.Type, PlayPayloadHandler)} since
 	 * the channel handler will only be applied to the player represented by the {@link ServerGamePacketListenerImpl}.
 	 *
-	 * <p>For example, if you only register a receiver using this method when a {@linkplain ServerLoginNetworking#registerGlobalReceiver(ResourceLocation, ServerLoginNetworking.LoginQueryResponseHandler)}
+	 * <p>For example, if you only register a receiver using this method when a {@linkplain ServerLoginNetworking#registerGlobalReceiver(Identifier, ServerLoginNetworking.LoginQueryResponseHandler)}
 	 * login response has been received, you should use {@link ServerPlayConnectionEvents#INIT} to register the channel handler.
 	 *
 	 * <p>If a handler is already registered for the {@code type}, this method will return {@code false}, and no change will be made.
-	 * Use {@link #unregisterReceiver(ServerGamePacketListenerImpl, ResourceLocation)} to unregister the existing handler.
+	 * Use {@link #unregisterReceiver(ServerGamePacketListenerImpl, Identifier)} to unregister the existing handler.
 	 *
 	 * @param networkHandler the network handler
 	 * @param type the packet type
@@ -135,8 +136,7 @@ public final class ServerPlayNetworking {
 	 * @return the previous handler, or {@code null} if no handler was bound to the channel,
 	 * or it was not registered using {@link #registerReceiver(ServerGamePacketListenerImpl, CustomPacketPayload.Type, PlayPayloadHandler)}
 	 */
-	@Nullable
-	public static ServerPlayNetworking.PlayPayloadHandler<?> unregisterReceiver(ServerGamePacketListenerImpl networkHandler, ResourceLocation id) {
+	public static ServerPlayNetworking.@Nullable PlayPayloadHandler<?> unregisterReceiver(ServerGamePacketListenerImpl networkHandler, Identifier id) {
 		return NeoServerPlayNetworking.unregisterReceiver(networkHandler, id);
 	}
 
@@ -146,7 +146,7 @@ public final class ServerPlayNetworking {
 	 * @param player the player
 	 * @return All the channel names that the server can receive packets on
 	 */
-	public static Set<ResourceLocation> getReceived(ServerPlayer player) {
+	public static Set<Identifier> getReceived(ServerPlayer player) {
 		Objects.requireNonNull(player, "Server player entity cannot be null");
 
 		return getReceived(player.connection);
@@ -158,7 +158,7 @@ public final class ServerPlayNetworking {
 	 * @param handler the network handler
 	 * @return All the channel names that the server can receive packets on
 	 */
-	public static Set<ResourceLocation> getReceived(ServerGamePacketListenerImpl handler) {
+	public static Set<Identifier> getReceived(ServerGamePacketListenerImpl handler) {
 		Objects.requireNonNull(handler, "Server play network handler cannot be null");
 
 		return NeoServerPlayNetworking.getReceived(handler);
@@ -170,7 +170,7 @@ public final class ServerPlayNetworking {
 	 * @param player the player
 	 * @return All the channel names the connected client declared the ability to receive a packets on
 	 */
-	public static Set<ResourceLocation> getSendable(ServerPlayer player) {
+	public static Set<Identifier> getSendable(ServerPlayer player) {
 		Objects.requireNonNull(player, "Server player entity cannot be null");
 
 		return getSendable(player.connection);
@@ -182,7 +182,7 @@ public final class ServerPlayNetworking {
 	 * @param handler the network handler
 	 * @return {@code true} if the connected client has declared the ability to receive a packet on the specified channel
 	 */
-	public static Set<ResourceLocation> getSendable(ServerGamePacketListenerImpl handler) {
+	public static Set<Identifier> getSendable(ServerGamePacketListenerImpl handler) {
 		Objects.requireNonNull(handler, "Server play network handler cannot be null");
 
 		return NeoServerPlayNetworking.getSendable(handler);
@@ -195,7 +195,7 @@ public final class ServerPlayNetworking {
 	 * @param channelName the channel name
 	 * @return {@code true} if the connected client has declared the ability to receive a packet on the specified channel
 	 */
-	public static boolean canSend(ServerPlayer player, ResourceLocation channelName) {
+	public static boolean canSend(ServerPlayer player, Identifier channelName) {
 		Objects.requireNonNull(player, "Server player entity cannot be null");
 
 		return canSend(player.connection, channelName);
@@ -221,7 +221,7 @@ public final class ServerPlayNetworking {
 	 * @param channelName the channel name
 	 * @return {@code true} if the connected client has declared the ability to receive a packet on the specified channel
 	 */
-	public static boolean canSend(ServerGamePacketListenerImpl handler, ResourceLocation channelName) {
+	public static boolean canSend(ServerGamePacketListenerImpl handler, Identifier channelName) {
 		Objects.requireNonNull(handler, "Server play network handler cannot be null");
 		Objects.requireNonNull(channelName, "Channel name cannot be null");
 

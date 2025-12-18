@@ -16,20 +16,22 @@
 
 package net.fabricmc.fabric.test.networking.client.keybindreciever;
 
+import com.mojang.blaze3d.platform.InputConstants;
+
+import org.lwjgl.glfw.GLFW;
+
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.test.networking.keybindreciever.KeybindPayload;
+
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import org.lwjgl.glfw.GLFW;
-import com.mojang.blaze3d.platform.InputConstants;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.test.networking.keybindreciever.KeybindPayload;
-import net.minecraft.client.KeyMapping;
-
-import java.util.Objects;
 
 // Sends a packet to the server when a keybinding was pressed
 // The server in response will send a chat message to the client.
@@ -40,7 +42,7 @@ public class NetworkingKeybindClientPacketTest implements ClientModInitializer {
 	public void onInitializeClient() {
 		var modContainer = ModLoadingContext.get().getActiveContainer();
 
-		Objects.requireNonNull(modContainer.getEventBus()).addListener(EventPriority.HIGHEST, RegisterKeyMappingsEvent.class, event -> {
+		modContainer.getEventBus().addListener(EventPriority.HIGHEST, RegisterKeyMappingsEvent.class, event -> {
 			event.register(TEST_BINDING);
 		});
 

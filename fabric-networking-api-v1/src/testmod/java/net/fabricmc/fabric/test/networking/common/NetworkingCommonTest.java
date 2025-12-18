@@ -18,19 +18,16 @@ package net.fabricmc.fabric.test.networking.common;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
@@ -39,8 +36,12 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.test.networking.NetworkingTestmods;
 
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
 public class NetworkingCommonTest implements ModInitializer {
-	private static final Logger LOGGER = LoggerFactory.getLogger(NetworkingCommonTest.class);
 	private boolean firstLoad = true;
 	private List<String> receivedPlay = new ArrayList<>();
 	private List<String> receivedConfig = new ArrayList<>();
@@ -61,6 +62,9 @@ public class NetworkingCommonTest implements ModInitializer {
 		ServerPlayNetworking.registerGlobalReceiver(CommonPayload.ID, (payload, context) -> receivedPlay.add(context.player().getStringUUID()));
 		ServerConfigurationNetworking.registerGlobalReceiver(CommonPayload.ID, (payload, context) -> receivedConfig.add(context.networkHandler().getOwner().id().toString()));
 
+		AtomicLong runOnTick = new AtomicLong(-1);
+		AtomicReference<String> uuid = new AtomicReference<>();
+
 		// Ensure that the packets were received on the server
 		NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, EntityJoinLevelEvent.class, event -> {
 			if (!firstLoad) {
@@ -71,19 +75,25 @@ public class NetworkingCommonTest implements ModInitializer {
 			firstLoad = false;
 
 			if (event.getEntity() instanceof ServerPlayer player) {
-				final String uuid = player.getStringUUID();
-
-				// Allow a few ticks for the packets to be received
-				executeIn(Objects.requireNonNull(event.getLevel().getServer()), 50, () -> {
-					if (!receivedPlay.remove(uuid)) {
-						throw new IllegalStateException("Did not receive play response");
-					}
-
-					if (!receivedConfig.remove(uuid)) {
-						throw new IllegalStateException("Did not receive configuration response");
-					}
-				});
+				uuid.set(player.getStringUUID());
+				runOnTick.set(player.level().getServer().getLevel(Level.OVERWORLD).getGameTime() + 50);
 			}
+		});
+
+		NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, ServerTickEvent.Post.class, event -> {
+			if (event.getServer().getLevel(Level.OVERWORLD).getGameTime() != runOnTick.get()) {
+				return;
+			}
+
+			if (!receivedPlay.remove(uuid.get())) {
+				throw new IllegalStateException("Did not receive play response");
+			}
+
+			if (!receivedConfig.remove(uuid.get())) {
+				throw new IllegalStateException("Did not receive configuration response");
+			}
+
+			runOnTick.set(-1);
 		});
 	}
 
@@ -97,25 +107,5 @@ public class NetworkingCommonTest implements ModInitializer {
 		public Type<? extends CustomPacketPayload> type() {
 			return ID;
 		}
-	}
-
-	private static void executeIn(MinecraftServer server, int ticks, Runnable runnable) {
-		int targetTime = server.getTickCount() + ticks;
-		server.execute(new Runnable() {
-			@Override
-			public void run() {
-				if (!server.isRunning()) {
-					LOGGER.warn("Server is no longer running, cannot execute task");
-					return;
-				}
-
-				if (server.getTickCount() >= targetTime) {
-					runnable.run();
-					return;
-				}
-
-				server.execute(this);
-			}
-		});
 	}
 }

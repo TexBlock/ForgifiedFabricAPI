@@ -16,14 +16,15 @@
 
 package net.fabricmc.fabric.test.networking.client.channeltest;
 
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 final class ChannelScreen extends Screen {
 	private final NetworkingChannelClientTest mod;
@@ -86,7 +87,7 @@ final class ChannelScreen extends Screen {
 		button.active = false;
 		this.channelList.clear();
 
-		for (ResourceLocation receiver : ClientPlayNetworking.getSendable()) {
+		for (Identifier receiver : ClientPlayNetworking.getSendable()) {
 			this.channelList.addEntry(this.channelList.new Entry(receiver));
 		}
 	}
@@ -96,7 +97,7 @@ final class ChannelScreen extends Screen {
 		button.active = false;
 		this.channelList.clear();
 
-		for (ResourceLocation receiver : ClientPlayNetworking.getReceived()) {
+		for (Identifier receiver : ClientPlayNetworking.getReceived()) {
 			this.channelList.addEntry(this.channelList.new Entry(receiver));
 		}
 	}

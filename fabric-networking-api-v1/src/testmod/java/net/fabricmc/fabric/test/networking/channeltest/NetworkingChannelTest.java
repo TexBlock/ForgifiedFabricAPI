@@ -16,12 +16,12 @@
 
 package net.fabricmc.fabric.test.networking.channeltest;
 
-import static net.minecraft.commands.arguments.EntityArgument.getPlayer;
-import static net.minecraft.commands.arguments.EntityArgument.player;
-import static net.minecraft.commands.arguments.ResourceLocationArgument.getId;
-import static net.minecraft.commands.arguments.ResourceLocationArgument.id;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
+import static net.minecraft.commands.arguments.EntityArgument.getPlayer;
+import static net.minecraft.commands.arguments.EntityArgument.player;
+import static net.minecraft.commands.arguments.IdentifierArgument.getId;
+import static net.minecraft.commands.arguments.IdentifierArgument.id;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -32,17 +32,20 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl;
+
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl;
+
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -98,7 +101,7 @@ public final class NetworkingChannelTest implements ModInitializer {
 	}
 
 	private static int registerChannel(CommandContext<CommandSourceStack> context, ServerPlayer executor) throws CommandSyntaxException {
-		final ResourceLocation channel = getId(context, "channel");
+		final Identifier channel = getId(context, "channel");
 
 		if (ServerPlayNetworking.getReceived(executor).contains(channel)) {
 			throw new SimpleCommandExceptionType(Component.literal(String.format("Cannot register channel %s twice for server player", channel))).create();
@@ -118,7 +121,7 @@ public final class NetworkingChannelTest implements ModInitializer {
 	}
 
 	private static int unregisterChannel(CommandContext<CommandSourceStack> context, ServerPlayer player) throws CommandSyntaxException {
-		final ResourceLocation channel = getId(context, "channel");
+		final Identifier channel = getId(context, "channel");
 
 		if (!ServerPlayNetworking.getReceived(player).contains(channel)) {
 			throw new SimpleCommandExceptionType(Component.literal("Cannot unregister channel the server player entity cannot receive packets on")).create();

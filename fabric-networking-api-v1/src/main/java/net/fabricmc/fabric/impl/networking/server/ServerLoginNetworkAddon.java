@@ -27,7 +27,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.netty.channel.ChannelFutureListener;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
+
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.PacketSendListener;
@@ -37,9 +38,10 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
 import net.minecraft.network.protocol.login.ClientboundLoginCompressionPacket;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
+
 import net.fabricmc.fabric.api.networking.v1.LoginPacketSender;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
@@ -47,7 +49,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking;
 import net.fabricmc.fabric.impl.networking.AbstractNetworkAddon;
 import net.fabricmc.fabric.impl.networking.payload.PacketByteBufLoginQueryRequestPayload;
 import net.fabricmc.fabric.impl.networking.payload.PacketByteBufLoginQueryResponse;
-import net.fabricmc.fabric.mixin.networking.accessor.ServerLoginNetworkHandlerAccessor;
+import net.fabricmc.fabric.mixin.networking.accessor.ServerLoginPacketListenerImplAccessor;
 
 public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<ServerLoginNetworking.LoginQueryResponseHandler> implements LoginPacketSender {
 	private final Connection connection;
@@ -55,14 +57,14 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<ServerLo
 	private final MinecraftServer server;
 	private final QueryIdFactory queryIdFactory;
 	private final Collection<Future<?>> waits = new ConcurrentLinkedQueue<>();
-	private final Map<Integer, ResourceLocation> channels = new ConcurrentHashMap<>();
+	private final Map<Integer, Identifier> channels = new ConcurrentHashMap<>();
 	private boolean firstQueryTick = true;
 
 	public ServerLoginNetworkAddon(ServerLoginPacketListenerImpl handler) {
 		super(ServerNetworkingImpl.LOGIN, "ServerLoginNetworkAddon for " + handler.getUserName());
-		this.connection = ((ServerLoginNetworkHandlerAccessor) handler).getConnection();
+		this.connection = ((ServerLoginPacketListenerImplAccessor) handler).getConnection();
 		this.handler = handler;
-		this.server = ((ServerLoginNetworkHandlerAccessor) handler).getServer();
+		this.server = ((ServerLoginPacketListenerImplAccessor) handler).getServer();
 		this.queryIdFactory = QueryIdFactory.create();
 	}
 
@@ -131,7 +133,7 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<ServerLo
 
 	private boolean handle(int queryId, @Nullable FriendlyByteBuf originalBuf) {
 		this.logger.debug("Handling inbound login query with id {}", queryId);
-		ResourceLocation channel = this.channels.remove(queryId);
+		Identifier channel = this.channels.remove(queryId);
 
 		if (channel == null) {
 			this.logger.warn("Query ID {} was received but no query has been associated in {}!", queryId, this.connection);
@@ -139,7 +141,7 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<ServerLo
 		}
 
 		boolean understood = originalBuf != null;
-		@Nullable ServerLoginNetworking.LoginQueryResponseHandler handler = this.getHandler(channel);
+		ServerLoginNetworking.@Nullable LoginQueryResponseHandler handler = this.getHandler(channel);
 
 		if (handler == null) {
 			return false;
@@ -163,7 +165,7 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<ServerLo
 	}
 
 	@Override
-	public Packet<?> createPacket(ResourceLocation channelName, FriendlyByteBuf buf) {
+	public Packet<?> createPacket(Identifier channelName, FriendlyByteBuf buf) {
 		int queryId = this.queryIdFactory.nextId();
 		return new ClientboundCustomQueryPacket(queryId, new PacketByteBufLoginQueryRequestPayload(channelName, buf));
 	}
@@ -187,11 +189,11 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<ServerLo
 	}
 
 	@Override
-	protected void handleRegistration(ResourceLocation channelName) {
+	protected void handleRegistration(Identifier channelName) {
 	}
 
 	@Override
-	protected void handleUnregistration(ResourceLocation channelName) {
+	protected void handleUnregistration(Identifier channelName) {
 	}
 
 	@Override
@@ -200,7 +202,7 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<ServerLo
 	}
 
 	@Override
-	protected boolean isReservedChannel(ResourceLocation channelName) {
+	protected boolean isReservedChannel(Identifier channelName) {
 		return false;
 	}
 }

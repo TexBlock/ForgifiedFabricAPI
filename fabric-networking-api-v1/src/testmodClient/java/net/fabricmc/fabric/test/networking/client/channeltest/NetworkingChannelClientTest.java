@@ -16,34 +16,36 @@
 
 package net.fabricmc.fabric.test.networking.client.channeltest;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
+
+import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
+
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
+
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import org.lwjgl.glfw.GLFW;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 
 public final class NetworkingChannelClientTest implements ClientModInitializer {
 	public static final KeyMapping OPEN = new KeyMapping("key.fabric-networking-api-v1-testmod.open", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_MENU, KeyMapping.Category.MISC);
-	static final Set<ResourceLocation> SUPPORTED_C2S_CHANNELS = new HashSet<>();
+	static final Set<Identifier> SUPPORTED_C2S_CHANNELS = new HashSet<>();
 
 	@Override
 	public void onInitializeClient() {
 		var modContainer = ModLoadingContext.get().getActiveContainer();
 
-		Objects.requireNonNull(modContainer.getEventBus()).addListener(EventPriority.HIGHEST, RegisterKeyMappingsEvent.class, event -> {
+		modContainer.getEventBus().addListener(EventPriority.HIGHEST, RegisterKeyMappingsEvent.class, event -> {
 			event.register(OPEN);
 		});
 

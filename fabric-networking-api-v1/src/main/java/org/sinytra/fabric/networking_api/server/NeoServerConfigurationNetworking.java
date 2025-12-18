@@ -6,7 +6,7 @@ import net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -23,11 +23,11 @@ public class NeoServerConfigurationNetworking {
         return NeoCommonNetworking.CONFIGURATION_REGISTRY.registerGlobalReceiver(type, PacketFlow.SERVERBOUND, handler, ServerConfigNeoContextWrapper::new, ServerConfigurationNetworking.ConfigurationPacketHandler::receive);
     }
 
-    public static ServerConfigurationNetworking.ConfigurationPacketHandler<?> unregisterGlobalReceiver(ResourceLocation id) {
+    public static ServerConfigurationNetworking.ConfigurationPacketHandler<?> unregisterGlobalReceiver(Identifier id) {
         return NeoCommonNetworking.CONFIGURATION_REGISTRY.unregisterGlobalReceiver(id, PacketFlow.SERVERBOUND);
     }
 
-    public static Set<ResourceLocation> getGlobalReceivers() {
+    public static Set<Identifier> getGlobalReceivers() {
         return NeoCommonNetworking.CONFIGURATION_REGISTRY.getGlobalReceivers(PacketFlow.SERVERBOUND);
     }
 
@@ -36,19 +36,19 @@ public class NeoServerConfigurationNetworking {
         return NeoCommonNetworking.CONFIGURATION_REGISTRY.registerLocalReceiver(type, networkHandler, handler, ServerConfigNeoContextWrapper::new, ServerConfigurationNetworking.ConfigurationPacketHandler::receive);
     }
 
-    public static ServerConfigurationNetworking.ConfigurationPacketHandler<?> unregisterReceiver(ServerConfigurationPacketListenerImpl networkHandler, ResourceLocation id) {
+    public static ServerConfigurationNetworking.ConfigurationPacketHandler<?> unregisterReceiver(ServerConfigurationPacketListenerImpl networkHandler, Identifier id) {
         return NeoCommonNetworking.CONFIGURATION_REGISTRY.unregisterLocalReceiver(id, networkHandler);
     }
 
-    public static Set<ResourceLocation> getReceived(ServerConfigurationPacketListenerImpl handler) throws IllegalStateException {
+    public static Set<Identifier> getReceived(ServerConfigurationPacketListenerImpl handler) throws IllegalStateException {
         return NeoCommonNetworking.CONFIGURATION_REGISTRY.getLocalReceivers(handler);
     }
 
-    public static Set<ResourceLocation> getSendable(ServerConfigurationPacketListenerImpl handler) throws IllegalStateException {
+    public static Set<Identifier> getSendable(ServerConfigurationPacketListenerImpl handler) throws IllegalStateException {
         return NeoCommonNetworking.CONFIGURATION_REGISTRY.getLocalSendable(handler);
     }
 
-    public static boolean canSend(ServerConfigurationPacketListenerImpl handler, ResourceLocation channelName) throws IllegalArgumentException {
+    public static boolean canSend(ServerConfigurationPacketListenerImpl handler, Identifier channelName) throws IllegalArgumentException {
         return NetworkRegistry.hasChannel(handler, channelName);
     }
 

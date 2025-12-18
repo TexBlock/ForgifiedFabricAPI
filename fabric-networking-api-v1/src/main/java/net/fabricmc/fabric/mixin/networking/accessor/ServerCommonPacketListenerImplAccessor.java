@@ -16,13 +16,17 @@
 
 package net.fabricmc.fabric.mixin.networking.accessor;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import net.minecraft.server.level.ChunkMap;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
+import net.minecraft.network.Connection;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 
-@Mixin(ChunkMap.class)
-public interface ServerChunkLoadingManagerAccessor {
+@Mixin(ServerCommonPacketListenerImpl.class)
+public interface ServerCommonPacketListenerImplAccessor {
 	@Accessor
-	Int2ObjectMap<EntityTrackerAccessor> getEntityMap();
+	Connection getConnection();
+
+	@Accessor
+	MinecraftServer getServer();
 }

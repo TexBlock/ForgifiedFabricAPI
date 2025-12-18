@@ -3,7 +3,7 @@ package org.sinytra.fabric.networking_api;
 import net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class NeoCommonNetworking {
     public static final NeoNetworkRegistrar CONFIGURATION_REGISTRY = new NeoNetworkRegistrar(ConnectionProtocol.CONFIGURATION);
@@ -11,7 +11,7 @@ public class NeoCommonNetworking {
 
     public static final int DEFAULT_CHANNEL_NAME_MAX_LENGTH = 128;
 
-    public static void assertPayloadType(PayloadTypeRegistryImpl<?> payloadTypeRegistry, ResourceLocation channelName, PacketFlow side, ConnectionProtocol phase) {
+    public static void assertPayloadType(PayloadTypeRegistryImpl<?> payloadTypeRegistry, Identifier channelName, PacketFlow side, ConnectionProtocol phase) {
         if (payloadTypeRegistry == null) {
             return;
         }

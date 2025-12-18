@@ -27,7 +27,7 @@ import net.fabricmc.fabric.impl.networking.payload.PayloadHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
 import net.minecraft.network.protocol.login.custom.CustomQueryPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 @Mixin(ClientboundCustomQueryPacket.class)
 public class LoginQueryRequestS2CPacketMixin {
@@ -36,7 +36,7 @@ public class LoginQueryRequestS2CPacketMixin {
 	private static int MAX_PAYLOAD_SIZE;
 
 	@Inject(method = "readPayload", at = @At("HEAD"), cancellable = true)
-	private static void readPayload(ResourceLocation id, FriendlyByteBuf buf, CallbackInfoReturnable<CustomQueryPayload> cir) {
+	private static void readPayload(Identifier id, FriendlyByteBuf buf, CallbackInfoReturnable<CustomQueryPayload> cir) {
 		cir.setReturnValue(new PacketByteBufLoginQueryRequestPayload(id, PayloadHelper.read(buf, MAX_PAYLOAD_SIZE)));
 	}
 }

@@ -19,20 +19,21 @@ package net.fabricmc.fabric.api.client.networking.v1;
 import java.util.Objects;
 import java.util.Set;
 
-import net.minecraft.network.ConnectionProtocol;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.impl.networking.client.ClientNetworkingImpl;
+import org.jspecify.annotations.Nullable;
+import org.sinytra.fabric.networking_api.client.NeoClientPlayNetworking;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ServerCommonPacketListener;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import org.sinytra.fabric.networking_api.client.NeoClientPlayNetworking;
+import net.minecraft.resources.Identifier;
+
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.impl.networking.client.ClientNetworkingImpl;
 
 /**
  * Offers access to play stage client-side networking functionalities.
@@ -58,13 +59,13 @@ public final class ClientPlayNetworking {
 	 * A global receiver is registered to all connections, in the present and future.
 	 *
 	 * <p>If a handler is already registered for the {@code type}, this method will return {@code false}, and no change will be made.
-	 * Use {@link #unregisterGlobalReceiver(ResourceLocation)} to unregister the existing handler.
+	 * Use {@link #unregisterGlobalReceiver(Identifier)} to unregister the existing handler.
 	 *
 	 * @param type the payload type
 	 * @param handler the handler
 	 * @return false if a handler is already registered to the channel
 	 * @throws IllegalArgumentException if the codec for {@code type} has not been {@linkplain PayloadTypeRegistry#playS2C() registered} yet
-	 * @see ClientPlayNetworking#unregisterGlobalReceiver(ResourceLocation)
+	 * @see ClientPlayNetworking#unregisterGlobalReceiver(Identifier)
 	 * @see ClientPlayNetworking#registerReceiver(CustomPacketPayload.Type, PlayPayloadHandler)
 	 */
 	public static <T extends CustomPacketPayload> boolean registerGlobalReceiver(CustomPacketPayload.Type<T> type, PlayPayloadHandler<T> handler) {
@@ -81,10 +82,9 @@ public final class ClientPlayNetworking {
 	 * @return the previous handler, or {@code null} if no handler was bound to the channel,
 	 * or it was not registered using {@link #registerGlobalReceiver(CustomPacketPayload.Type, PlayPayloadHandler)}
 	 * @see ClientPlayNetworking#registerGlobalReceiver(CustomPacketPayload.Type, PlayPayloadHandler)
-	 * @see ClientPlayNetworking#unregisterReceiver(ResourceLocation)
+	 * @see ClientPlayNetworking#unregisterReceiver(Identifier)
 	 */
-	@Nullable
-	public static ClientPlayNetworking.PlayPayloadHandler<?> unregisterGlobalReceiver(ResourceLocation id) {
+	public static ClientPlayNetworking.@Nullable PlayPayloadHandler<?> unregisterGlobalReceiver(Identifier id) {
 		return NeoClientPlayNetworking.unregisterGlobalReceiver(id);
 	}
 
@@ -94,7 +94,7 @@ public final class ClientPlayNetworking {
 	 *
 	 * @return all channel names which global receivers are registered for.
 	 */
-	public static Set<ResourceLocation> getGlobalReceivers() {
+	public static Set<Identifier> getGlobalReceivers() {
 		return NeoClientPlayNetworking.getGlobalReceivers();
 	}
 
@@ -102,9 +102,9 @@ public final class ClientPlayNetworking {
 	 * Registers a handler for a payload type.
 	 *
 	 * <p>If a handler is already registered for the {@code type}, this method will return {@code false}, and no change will be made.
-	 * Use {@link #unregisterReceiver(ResourceLocation)} to unregister the existing handler.
+	 * Use {@link #unregisterReceiver(Identifier)} to unregister the existing handler.
 	 *
-	 * <p>For example, if you only register a receiver using this method when a {@linkplain ClientLoginNetworking#registerGlobalReceiver(ResourceLocation, ClientLoginNetworking.LoginQueryRequestHandler)}
+	 * <p>For example, if you only register a receiver using this method when a {@linkplain ClientLoginNetworking#registerGlobalReceiver(Identifier, ClientLoginNetworking.LoginQueryRequestHandler)}
 	 * login query has been received, you should use {@link ClientPlayConnectionEvents#INIT} to register the channel handler.
 	 *
 	 * @param type the payload type
@@ -128,10 +128,9 @@ public final class ClientPlayNetworking {
 	 * or it was not registered using {@link #registerReceiver(CustomPacketPayload.Type, PlayPayloadHandler)}
 	 * @throws IllegalStateException if the client is not connected to a server
 	 */
-	@Nullable
-	public static ClientPlayNetworking.PlayPayloadHandler<?> unregisterReceiver(ResourceLocation id) {
+	public static ClientPlayNetworking.@Nullable PlayPayloadHandler<?> unregisterReceiver(Identifier id) {
 		return NeoClientPlayNetworking.unregisterReceiver(id);
-	}
+    }
 
 	/**
 	 * Gets all the channel names that the client can receive packets on.
@@ -139,7 +138,7 @@ public final class ClientPlayNetworking {
 	 * @return All the channel names that the client can receive packets on
 	 * @throws IllegalStateException if the client is not connected to a server
 	 */
-	public static Set<ResourceLocation> getReceived() throws IllegalStateException {
+	public static Set<Identifier> getReceived() throws IllegalStateException {
 		return NeoClientPlayNetworking.getReceived();
 	}
 
@@ -149,7 +148,7 @@ public final class ClientPlayNetworking {
 	 * @return All the channel names the connected server declared the ability to receive a packets on
 	 * @throws IllegalStateException if the client is not connected to a server
 	 */
-	public static Set<ResourceLocation> getSendable() throws IllegalStateException {
+	public static Set<Identifier> getSendable() throws IllegalStateException {
 		return NeoClientPlayNetworking.getSendable();
 	}
 
@@ -160,9 +159,9 @@ public final class ClientPlayNetworking {
 	 * @return {@code true} if the connected server has declared the ability to receive a payload on the specified channel.
 	 * False if the client is not in game.
 	 */
-	public static boolean canSend(ResourceLocation channelName) throws IllegalArgumentException {
+	public static boolean canSend(Identifier channelName) throws IllegalArgumentException {
 		// You cant send without a client player, so this is fine
-		if (Minecraft.getInstance().getConnection() != null && Minecraft.getInstance().getConnection().protocol() == ConnectionProtocol.PLAY) {
+		if (Minecraft.getInstance().getConnection() != null) {
 			return NeoClientPlayNetworking.canSend(channelName);
 		}
 

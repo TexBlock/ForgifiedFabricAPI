@@ -1,7 +1,7 @@
 package net.fabricmc.fabric.mixin.networking.accessor;
 
 import net.minecraft.network.ConnectionProtocol;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import net.neoforged.neoforge.network.registration.PayloadRegistration;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,7 +12,7 @@ import java.util.Map;
 @Mixin(NetworkRegistry.class)
 public interface NetworkRegistryAccessor {
     @Accessor("PAYLOAD_REGISTRATIONS")
-    static Map<ConnectionProtocol, Map<ResourceLocation, PayloadRegistration<?>>> getPayloadRegistrations() {
+    static Map<ConnectionProtocol, Map<Identifier, PayloadRegistration<?>>> getPayloadRegistrations() {
         throw new UnsupportedOperationException();
     }
 

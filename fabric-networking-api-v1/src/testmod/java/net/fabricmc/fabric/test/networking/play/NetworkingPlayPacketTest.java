@@ -27,13 +27,6 @@ import java.util.Objects;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.impl.networking.FabricRegistryByteBuf;
-import net.fabricmc.fabric.test.networking.NetworkingTestmods;
-import net.fabricmc.fabric.test.networking.common.NetworkingCommonTest;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.PacketSendListener;
@@ -44,8 +37,17 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientboundBundlePacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.impl.networking.FabricRegistryByteBuf;
+import net.fabricmc.fabric.test.networking.NetworkingTestmods;
+import net.fabricmc.fabric.test.networking.common.NetworkingCommonTest;
+
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
@@ -90,7 +92,10 @@ public final class NetworkingPlayPacketTest implements ModInitializer {
 				.then(literal("bundled").executes(ctx -> {
 					ClientboundBundlePacket packet = new ClientboundBundlePacket(List.of(
 							ServerPlayNetworking.createS2CPacket(new OverlayPacket(Component.literal("bundled #1"))),
-							ServerPlayNetworking.createS2CPacket(new OverlayPacket(Component.literal("bundled #2")))
+							new ClientboundBundlePacket(List.of(
+									ServerPlayNetworking.createS2CPacket(new OverlayPacket(Component.literal("bundled #2"))),
+									ServerPlayNetworking.createS2CPacket(new OverlayPacket(Component.literal("bundled #3")))
+							))
 					));
 					ServerPlayNetworking.getSender(ctx.getSource().getPlayer()).sendPacket(packet);
 					return Command.SINGLE_SUCCESS;
@@ -143,7 +148,7 @@ public final class NetworkingPlayPacketTest implements ModInitializer {
 		public void write(RegistryFriendlyByteBuf buf) {
 			// Test that we can get the configuration channels that the client accepts
 			FabricRegistryByteBuf fabricRegistryByteBuf = (FabricRegistryByteBuf) buf;
-			Collection<ResourceLocation> channels = fabricRegistryByteBuf.fabric_getSendableConfigurationChannels();
+			Collection<Identifier> channels = fabricRegistryByteBuf.fabric_getSendableConfigurationChannels();
 			Objects.requireNonNull(channels);
 
 			if (!channels.contains(NetworkingCommonTest.CommonPayload.ID.id())) {

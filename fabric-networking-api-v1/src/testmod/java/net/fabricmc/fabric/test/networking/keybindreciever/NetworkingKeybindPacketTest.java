@@ -16,12 +16,13 @@
 
 package net.fabricmc.fabric.test.networking.keybindreciever;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 
 // Listens for a packet from the client which is sent to the server when a keybinding is pressed.
 // In response the server will send a message containing the keybind text letting the client know it pressed that key.

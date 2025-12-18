@@ -16,29 +16,29 @@
 
 package net.fabricmc.fabric.test.networking.client;
 
-import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+
+import net.fabricmc.api.ClientModInitializer;
+
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.common.NeoForge;
-
-import java.util.Objects;
 
 public class DisconnectScreenTest implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, RegisterClientCommandsEvent.class, event -> {
-			event.getDispatcher().register(Commands.literal("disconnect_screen_test").executes(context -> {
-				StringBuilder builder = new StringBuilder("A very long disconnect reason:");
+				event.getDispatcher().register(Commands.literal("disconnect_screen_test").executes(context -> {
+					StringBuilder builder = new StringBuilder("A very long disconnect reason:");
 
-				for (int i = 0; i < 100; i++) {
-					builder.append("\nLine ").append(i + 1);
-				}
+					for (int i = 0; i < 100; i++) {
+						builder.append("\nLine ").append(i + 1);
+					}
 
-				Objects.requireNonNull(context.getSource().getPlayer()).connection.getConnection().disconnect(Component.nullToEmpty(builder.toString()));
-				return 1;
-			}));
+					context.getSource().getPlayer().connection.getConnection().disconnect(Component.nullToEmpty(builder.toString()));
+					return 1;
+				}));
 		});
 	}
 }

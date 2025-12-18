@@ -16,7 +16,7 @@
 
 package net.fabricmc.fabric.api.networking.v1;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 
@@ -28,7 +28,7 @@ public interface FabricServerConfigurationNetworkHandler {
 	/**
 	 * Enqueues a {@link ConfigurationTask} task to be processed.
 	 *
-	 * <p>Before adding a task use {@link ServerConfigurationNetworking#canSend(ServerConfigurationPacketListenerImpl, ResourceLocation)}
+	 * <p>Before adding a task use {@link ServerConfigurationNetworking#canSend(ServerConfigurationPacketListenerImpl, Identifier)}
 	 * to ensure that the client can process this task.
 	 *
 	 * <p>Once the client has handled the task a packet should be sent to the server.

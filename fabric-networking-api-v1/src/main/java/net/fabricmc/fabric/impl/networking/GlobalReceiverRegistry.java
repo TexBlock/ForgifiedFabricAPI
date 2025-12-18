@@ -24,12 +24,14 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import net.minecraft.network.ConnectionProtocol;
-import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.minecraft.network.ConnectionProtocol;
+import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.resources.Identifier;
 
 public final class GlobalReceiverRegistry<H> {
 	public static final int DEFAULT_CHANNEL_NAME_MAX_LENGTH = 128;
@@ -41,7 +43,7 @@ public final class GlobalReceiverRegistry<H> {
 	private final PayloadTypeRegistryImpl<?> payloadTypeRegistry;
 
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
-	private final Map<ResourceLocation, H> handlers = new HashMap<>();
+	private final Map<Identifier, H> handlers = new HashMap<>();
 	private final Set<AbstractNetworkAddon<H>> trackedAddons = new HashSet<>();
 
 	public GlobalReceiverRegistry(PacketFlow side, ConnectionProtocol phase, @Nullable PayloadTypeRegistryImpl<?> payloadTypeRegistry) {
@@ -50,13 +52,18 @@ public final class GlobalReceiverRegistry<H> {
 		this.payloadTypeRegistry = payloadTypeRegistry;
 
 		if (payloadTypeRegistry != null) {
-			assert phase == payloadTypeRegistry.getPhase();
-			assert side == payloadTypeRegistry.getSide();
+			if (phase != payloadTypeRegistry.getPhase()) {
+				throw new IllegalStateException();
+			}
+
+			if (side != payloadTypeRegistry.getSide()) {
+				throw new IllegalStateException();
+			}
 		}
 	}
 
 	@Nullable
-	public H getHandler(ResourceLocation channelName) {
+	public H getHandler(Identifier channelName) {
 		Lock lock = this.lock.readLock();
 		lock.lock();
 
@@ -67,7 +74,7 @@ public final class GlobalReceiverRegistry<H> {
 		}
 	}
 
-	public boolean registerGlobalReceiver(ResourceLocation channelName, H handler) {
+	public boolean registerGlobalReceiver(Identifier channelName, H handler) {
 		Objects.requireNonNull(channelName, "Channel name cannot be null");
 		Objects.requireNonNull(handler, "Channel handler cannot be null");
 
@@ -94,7 +101,7 @@ public final class GlobalReceiverRegistry<H> {
 	}
 
 	@Nullable
-	public H unregisterGlobalReceiver(ResourceLocation channelName) {
+	public H unregisterGlobalReceiver(Identifier channelName) {
 		Objects.requireNonNull(channelName, "Channel name cannot be null");
 
 		if (NetworkingImpl.isReservedCommonChannel(channelName)) {
@@ -117,8 +124,8 @@ public final class GlobalReceiverRegistry<H> {
 		}
 	}
 
-	public Map<ResourceLocation, H> getHandlers() {
-		Lock lock = this.lock.writeLock();
+	public Map<Identifier, H> getHandlers() {
+		Lock lock = this.lock.readLock();
 		lock.lock();
 
 		try {
@@ -128,7 +135,7 @@ public final class GlobalReceiverRegistry<H> {
 		}
 	}
 
-	public Set<ResourceLocation> getChannels() {
+	public Set<Identifier> getChannels() {
 		Lock lock = this.lock.readLock();
 		lock.lock();
 
@@ -177,7 +184,7 @@ public final class GlobalReceiverRegistry<H> {
 		}
 	}
 
-	private void handleRegistration(ResourceLocation channelName, H handler) {
+	private void handleRegistration(Identifier channelName, H handler) {
 		Lock lock = this.lock.writeLock();
 		lock.lock();
 
@@ -192,7 +199,7 @@ public final class GlobalReceiverRegistry<H> {
 		}
 	}
 
-	private void handleUnregistration(ResourceLocation channelName) {
+	private void handleUnregistration(Identifier channelName) {
 		Lock lock = this.lock.writeLock();
 		lock.lock();
 
@@ -207,7 +214,7 @@ public final class GlobalReceiverRegistry<H> {
 		}
 	}
 
-	public void assertPayloadType(ResourceLocation channelName) {
+	public void assertPayloadType(Identifier channelName) {
 		if (payloadTypeRegistry == null) {
 			return;
 		}

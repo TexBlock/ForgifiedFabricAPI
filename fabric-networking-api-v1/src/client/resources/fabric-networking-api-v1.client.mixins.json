@@ -3,9 +3,10 @@
   "package": "net.fabricmc.fabric.mixin.networking.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "accessor.ClientHandshakePacketListenerImplAccessor",
     "accessor.ClientLoginNetworkHandlerAccessor",
     "accessor.ConnectScreenAccessor",
-    "accessor.MinecraftClientAccessor",
+    "accessor.MinecraftAccessor",
     "ClientCommonNetworkHandlerMixin",
     "ClientConfigurationNetworkHandlerMixin",
     "ClientLoginNetworkHandlerMixin",
@@ -14,5 +15,8 @@
   ],
   "injectors": {
     "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
   }
 }

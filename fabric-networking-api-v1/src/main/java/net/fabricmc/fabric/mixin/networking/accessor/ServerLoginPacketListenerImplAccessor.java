@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package net.fabricmc.fabric.test.networking;
+package net.fabricmc.fabric.mixin.networking.accessor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
+import net.minecraft.network.Connection;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
-import net.minecraft.resources.Identifier;
+@Mixin(ServerLoginPacketListenerImpl.class)
+public interface ServerLoginPacketListenerImplAccessor {
+	@Accessor
+	MinecraftServer getServer();
 
-public final class NetworkingTestmods {
-	public static final String ID = "fabric-networking-api-v1-testmod";
-	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
-
-	public static Identifier id(String name) {
-		return Identifier.fromNamespaceAndPath(ID, name);
-	}
-
-	private NetworkingTestmods() {
-	}
+	@Accessor
+	Connection getConnection();
 }

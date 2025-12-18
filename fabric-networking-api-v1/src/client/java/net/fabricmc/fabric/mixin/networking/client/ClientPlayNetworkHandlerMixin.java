@@ -17,7 +17,7 @@
 package net.fabricmc.fabric.mixin.networking.client;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.registration.ChannelAttributes;
 import org.sinytra.fabric.networking_api.NeoListenableNetworkHandler;
 import org.sinytra.fabric.networking_api.client.NeoClientCommonNetworking;
@@ -51,7 +51,7 @@ abstract class ClientPlayNetworkHandlerMixin extends ClientCommonPacketListenerI
     private void initAddon(CallbackInfo ci) {
         Connection connection = this.getConnection();
         if (connection != null && connection.channel() != null) {
-            Set<ResourceLocation> channels = ChannelAttributes.getOrCreateCommonChannels(connection, this.protocol());
+            Set<Identifier> channels = ChannelAttributes.getOrCreateCommonChannels(connection, this.protocol());
             NeoClientCommonNetworking.onRegisterPacket((ClientPacketListener) (Object) this, channels);
         }
 

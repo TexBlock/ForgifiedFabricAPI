@@ -16,17 +16,14 @@
 
 package net.fabricmc.fabric.mixin.networking.accessor;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
-import net.minecraft.network.Connection;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
-@Mixin(ServerLoginPacketListenerImpl.class)
-public interface ServerLoginNetworkHandlerAccessor {
-	@Accessor
-	MinecraftServer getServer();
+import net.minecraft.server.level.ChunkMap;
 
-	@Accessor
-	Connection getConnection();
+@Mixin(ChunkMap.class)
+public interface ChunkMapAccessor {
+	@Accessor("entityMap")
+	Int2ObjectMap<EntityTrackerAccessor> getEntityTrackers();
 }

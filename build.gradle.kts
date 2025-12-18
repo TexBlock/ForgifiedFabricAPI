@@ -8,7 +8,7 @@ import org.eclipse.jgit.api.Git
 plugins {
     java
     `maven-publish`
-    id("band.kessoku.koom") // Version declared in buildSrc
+    id("dev.architectury.loom") // Version declared in buildSrc
     id("me.modmuss50.mod-publish-plugin") version "0.5.+"
 }
 
@@ -71,7 +71,7 @@ allprojects {
     }
 
     apply(plugin = "java-library")
-    apply(plugin = "band.kessoku.koom")
+    apply(plugin = "dev.architectury.loom")
 
     loom.silentMojangMappingsLicense()
 
@@ -104,11 +104,7 @@ allprojects {
     dependencies {
         minecraft(group = "com.mojang", name = "minecraft", version = versionMc)
         neoForge(group = "net.neoforged", name = "neoforge", version = versionForge)
-        mappings(loom.layered {
-            officialMojangMappings {
-                nameSyntheticMembers = true
-            }
-        })
+        mappings(loom.officialMojangMappings())
     }
 
     // Run this task after updating minecraft to regenerate any required resources

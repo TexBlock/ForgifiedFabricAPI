@@ -8,7 +8,7 @@ import net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.extensions.ICommonPacketListener;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.sinytra.fabric.networking_api.NeoCommonNetworking;
@@ -24,11 +24,11 @@ public class NeoClientConfigurationNetworking {
         return NeoCommonNetworking.CONFIGURATION_REGISTRY.registerGlobalReceiver(type, PacketFlow.CLIENTBOUND, handler, ClientConfigNeoContextWrapper::new, ClientConfigurationNetworking.ConfigurationPayloadHandler::receive);
     }
 
-    public static ClientConfigurationNetworking.ConfigurationPayloadHandler<?> unregisterGlobalReceiver(ResourceLocation id) {
+    public static ClientConfigurationNetworking.ConfigurationPayloadHandler<?> unregisterGlobalReceiver(Identifier id) {
         return NeoCommonNetworking.CONFIGURATION_REGISTRY.unregisterGlobalReceiver(id, PacketFlow.CLIENTBOUND);
     }
 
-    public static Set<ResourceLocation> getGlobalReceivers() {
+    public static Set<Identifier> getGlobalReceivers() {
         return NeoCommonNetworking.CONFIGURATION_REGISTRY.getGlobalReceivers(PacketFlow.CLIENTBOUND);
     }
 
@@ -38,22 +38,22 @@ public class NeoClientConfigurationNetworking {
         return NeoCommonNetworking.CONFIGURATION_REGISTRY.registerLocalReceiver(type, listener, handler, ClientConfigNeoContextWrapper::new, ClientConfigurationNetworking.ConfigurationPayloadHandler::receive);
     }
 
-    public static ClientConfigurationNetworking.ConfigurationPayloadHandler<?> unregisterReceiver(ResourceLocation id) {
+    public static ClientConfigurationNetworking.ConfigurationPayloadHandler<?> unregisterReceiver(Identifier id) {
         ICommonPacketListener listener = Objects.requireNonNull(configurationPacketListener, "Cannot unregister receiver while not configuring!");
         return NeoCommonNetworking.CONFIGURATION_REGISTRY.unregisterLocalReceiver(id, listener);
     }
 
-    public static Set<ResourceLocation> getReceived() throws IllegalStateException {
+    public static Set<Identifier> getReceived() throws IllegalStateException {
         ICommonPacketListener listener = Objects.requireNonNull(configurationPacketListener, "Cannot get a list of channels the client can receive packets on while not configuring!");
         return NeoCommonNetworking.CONFIGURATION_REGISTRY.getLocalReceivers(listener);
     }
 
-    public static Set<ResourceLocation> getSendable() throws IllegalStateException {
+    public static Set<Identifier> getSendable() throws IllegalStateException {
         ICommonPacketListener listener = Objects.requireNonNull(configurationPacketListener, "Cannot get a list of channels the server can receive packets on while not configuring!");
         return NeoCommonNetworking.CONFIGURATION_REGISTRY.getLocalSendable(listener);
     }
 
-    public static boolean canSend(ResourceLocation channelName) throws IllegalArgumentException {
+    public static boolean canSend(Identifier channelName) throws IllegalArgumentException {
 //        ICommonPacketListener listener = Objects.requireNonNull(configurationPacketListener, "Cannot get a list of channels the server can receive packets on while not configuring!");
         return NeoCommonNetworking.CONFIGURATION_REGISTRY.getGlobalReceivers(PacketFlow.SERVERBOUND).contains(channelName);
     }

@@ -11,7 +11,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.extensions.ICommonPacketListener;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.MinecraftRegisterPayload;
@@ -33,11 +33,11 @@ public class NeoClientPlayNetworking {
         return NeoCommonNetworking.PLAY_REGISTRY.registerGlobalReceiver(type, PacketFlow.CLIENTBOUND, handler, ClientNeoContextWrapper::new, ClientPlayNetworking.PlayPayloadHandler::receive);
     }
 
-    public static ClientPlayNetworking.PlayPayloadHandler<?> unregisterGlobalReceiver(ResourceLocation id) {
+    public static ClientPlayNetworking.PlayPayloadHandler<?> unregisterGlobalReceiver(Identifier id) {
         return NeoCommonNetworking.PLAY_REGISTRY.unregisterGlobalReceiver(id, PacketFlow.CLIENTBOUND);
     }
 
-    public static Set<ResourceLocation> getGlobalReceivers() {
+    public static Set<Identifier> getGlobalReceivers() {
         return NeoCommonNetworking.PLAY_REGISTRY.getGlobalReceivers(PacketFlow.CLIENTBOUND);
     }
 
@@ -47,22 +47,22 @@ public class NeoClientPlayNetworking {
         return NeoCommonNetworking.PLAY_REGISTRY.registerLocalReceiver(type, listener, handler, ClientNeoContextWrapper::new, ClientPlayNetworking.PlayPayloadHandler::receive);
     }
 
-    public static ClientPlayNetworking.PlayPayloadHandler<?> unregisterReceiver(ResourceLocation id) {
+    public static ClientPlayNetworking.PlayPayloadHandler<?> unregisterReceiver(Identifier id) {
         ICommonPacketListener listener = Objects.requireNonNull(getClientListener(), "Cannot unregister receiver while not in game!");
         return NeoCommonNetworking.PLAY_REGISTRY.unregisterLocalReceiver(id, listener);
     }
 
-    public static Set<ResourceLocation> getReceived() throws IllegalStateException {
+    public static Set<Identifier> getReceived() throws IllegalStateException {
         ICommonPacketListener listener = Objects.requireNonNull(getClientListener(), "Cannot get a list of channels the client can receive packets on while not in game!");
         return NeoCommonNetworking.PLAY_REGISTRY.getLocalReceivers(listener);
     }
 
-    public static Set<ResourceLocation> getSendable() throws IllegalStateException {
+    public static Set<Identifier> getSendable() throws IllegalStateException {
         ICommonPacketListener listener = Objects.requireNonNull(getClientListener(), "Cannot get a list of channels the server can receive packets on while not in game!");
         return NeoCommonNetworking.PLAY_REGISTRY.getLocalSendable(listener);
     }
 
-    public static boolean canSend(ResourceLocation channelName) throws IllegalArgumentException {
+    public static boolean canSend(Identifier channelName) throws IllegalArgumentException {
         return NetworkRegistry.hasChannel(Minecraft.getInstance().getConnection(), channelName);
     }
 

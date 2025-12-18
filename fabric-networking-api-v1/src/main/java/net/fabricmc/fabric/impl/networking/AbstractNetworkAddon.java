@@ -25,10 +25,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.minecraft.resources.Identifier;
 
 /**
  * A network addon is a simple abstraction to hold information about a player's registered channels.
@@ -42,7 +44,7 @@ public abstract class AbstractNetworkAddon<H> {
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 	// Sync map should be fine as there is little read write competition
 	// All access to this map is guarded by the lock
-	private final Map<ResourceLocation, H> handlers = new HashMap<>();
+	private final Map<Identifier, H> handlers = new HashMap<>();
 	private final AtomicBoolean disconnected = new AtomicBoolean(); // blocks redundant disconnect notifications
 
 	protected AbstractNetworkAddon(GlobalReceiverRegistry<H> receiver, String description) {
@@ -62,7 +64,7 @@ public abstract class AbstractNetworkAddon<H> {
 	}
 
 	@Nullable
-	public H getHandler(ResourceLocation channel) {
+	public H getHandler(Identifier channel) {
 		Lock lock = this.lock.readLock();
 		lock.lock();
 
@@ -73,18 +75,18 @@ public abstract class AbstractNetworkAddon<H> {
 		}
 	}
 
-	private void assertNotReserved(ResourceLocation channel) {
+	private void assertNotReserved(Identifier channel) {
 		if (this.isReservedChannel(channel)) {
 			throw new IllegalArgumentException(String.format("Cannot (un)register handler for reserved channel with name \"%s\"", channel));
 		}
 	}
 
-	public void registerChannels(Map<ResourceLocation, H> map) {
+	public void registerChannels(Map<Identifier, H> map) {
 		Lock lock = this.lock.writeLock();
 		lock.lock();
 
 		try {
-			for (Map.Entry<ResourceLocation, H> entry : map.entrySet()) {
+			for (Map.Entry<Identifier, H> entry : map.entrySet()) {
 				assertNotReserved(entry.getKey());
 
 				boolean unique = this.handlers.putIfAbsent(entry.getKey(), entry.getValue()) == null;
@@ -95,7 +97,7 @@ public abstract class AbstractNetworkAddon<H> {
 		}
 	}
 
-	public boolean registerChannel(ResourceLocation channelName, H handler) {
+	public boolean registerChannel(Identifier channelName, H handler) {
 		Objects.requireNonNull(channelName, "Channel name cannot be null");
 		Objects.requireNonNull(handler, "Packet handler cannot be null");
 		assertNotReserved(channelName);
@@ -118,7 +120,7 @@ public abstract class AbstractNetworkAddon<H> {
 		}
 	}
 
-	public H unregisterChannel(ResourceLocation channelName) {
+	public H unregisterChannel(Identifier channelName) {
 		Objects.requireNonNull(channelName, "Channel name cannot be null");
 		assertNotReserved(channelName);
 
@@ -138,7 +140,7 @@ public abstract class AbstractNetworkAddon<H> {
 		}
 	}
 
-	public Set<ResourceLocation> getReceivableChannels() {
+	public Set<Identifier> getReceivableChannels() {
 		Lock lock = this.lock.readLock();
 		lock.lock();
 
@@ -149,9 +151,9 @@ public abstract class AbstractNetworkAddon<H> {
 		}
 	}
 
-	protected abstract void handleRegistration(ResourceLocation channelName);
+	protected abstract void handleRegistration(Identifier channelName);
 
-	protected abstract void handleUnregistration(ResourceLocation channelName);
+	protected abstract void handleUnregistration(Identifier channelName);
 
 	public final void handleDisconnect() {
 		if (disconnected.compareAndSet(false, true)) {
@@ -169,5 +171,5 @@ public abstract class AbstractNetworkAddon<H> {
 	 * @param channelName the channel name
 	 * @return whether the channel is reserved
 	 */
-	protected abstract boolean isReservedChannel(ResourceLocation channelName);
+	protected abstract boolean isReservedChannel(Identifier channelName);
 }

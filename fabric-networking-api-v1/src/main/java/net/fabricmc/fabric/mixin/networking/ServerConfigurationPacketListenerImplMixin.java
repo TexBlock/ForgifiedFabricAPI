@@ -19,7 +19,7 @@ package net.fabricmc.fabric.mixin.networking;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.network.Connection;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.extensions.ICommonPacketListener;
 import org.sinytra.fabric.networking_api.server.NeoServerCommonNetworking;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,15 +29,15 @@ import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import java.util.Set;
 
 @Mixin(ServerCommonPacketListenerImpl.class)
-public abstract class ServerCommonNetworkHandlerMixin {
+public abstract class ServerConfigurationPacketListenerImplMixin {
     @WrapOperation(method = "handleCustomPayload", at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/network/registration/NetworkRegistry;onMinecraftRegister(Lnet/minecraft/network/Connection;Ljava/util/Set;)V"))
-    public void onCustomPayloadRegisterPacket(Connection connection, Set<ResourceLocation> channels, Operation<Void> original) {
+    public void onCustomPayloadRegisterPacket(Connection connection, Set<Identifier> channels, Operation<Void> original) {
         original.call(connection, channels);
         NeoServerCommonNetworking.onRegisterPacket((ICommonPacketListener) this, channels);
     }
 
     @WrapOperation(method = "handleCustomPayload", at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/network/registration/NetworkRegistry;onMinecraftUnregister(Lnet/minecraft/network/Connection;Ljava/util/Set;)V"))
-    public void onCustomPayloadUnregisterPacket(Connection connection, Set<ResourceLocation> channels, Operation<Void> original) {
+    public void onCustomPayloadUnregisterPacket(Connection connection, Set<Identifier> channels, Operation<Void> original) {
         original.call(connection, channels);
         NeoServerCommonNetworking.onUnregisterPacket((ICommonPacketListener) this, channels);
     }
