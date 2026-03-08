@@ -1,12 +1,12 @@
 package org.sinytra.fabric.networking_api;
 
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.commands.DebugConfigCommand;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -29,7 +29,7 @@ public class NetworkingEventHooks {
             return;
         }
 
-        if (FMLLoader.getCurrent().isProduction()) {
+        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             // Only register this command in a dev env
             return;
         }
