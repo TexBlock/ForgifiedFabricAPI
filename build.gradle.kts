@@ -98,6 +98,10 @@ allprojects {
             name = "Sinytra"
             url = uri("https://maven.su5ed.dev/releases")
         }
+        maven {
+            name = "KTT"
+            url = uri("https://maven.kessokuteatime.work/snapshots")
+        }
         mavenLocal()
     }
 
@@ -119,8 +123,9 @@ allprojects {
 
 dependencies {
     // Include Forgified Fabric Loader
-    include("org.sinytra:forgified-fabric-loader:$versionForgifiedFabricLoader")
-    api("org.sinytra:forgified-fabric-loader:$versionForgifiedFabricLoader")
+    include("org.sinytra:forgified-fabric-loader:$versionForgifiedFabricLoader:full")
+    compileOnly("org.sinytra:forgified-fabric-loader:$versionForgifiedFabricLoader")
+    runtimeOnly("org.sinytra:forgified-fabric-loader:$versionForgifiedFabricLoader:full")
 }
 
 val processIncludedJars by tasks.registering(NestableJarGenerationTask::class) {
