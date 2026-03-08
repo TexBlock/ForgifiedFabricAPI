@@ -32,7 +32,7 @@ repositories {
 }
 
 dependencies {
-    implementation("band.kessoku:koom:1.13-SNAPSHOT")
+    implementation("dev.architectury:architectury-loom:1.13-SNAPSHOT")
 
     implementation("net.fabricmc:fabric-loader:0.16.9")
 

@@ -8,7 +8,7 @@ import org.eclipse.jgit.api.Git
 plugins {
     java
     `maven-publish`
-    id("band.kessoku.koom") // Version declared in buildSrc
+    id("dev.architectury.loom") // Version declared in buildSrc
     id("me.modmuss50.mod-publish-plugin") version "0.5.+"
 }
 
@@ -71,7 +71,7 @@ allprojects {
     }
 
     apply(plugin = "java-library")
-    apply(plugin = "band.kessoku.koom")
+    apply(plugin = "dev.architectury.loom")
 
     loom.silentMojangMappingsLicense()
 
@@ -98,6 +98,10 @@ allprojects {
             name = "Sinytra"
             url = uri("https://maven.su5ed.dev/releases")
         }
+        maven {
+            name = "KTT"
+            url = uri("https://maven.kessokuteatime.work/snapshots")
+        }
         mavenLocal()
     }
 
@@ -119,8 +123,9 @@ allprojects {
 
 dependencies {
     // Include Forgified Fabric Loader
-    include("org.sinytra:forgified-fabric-loader:$versionForgifiedFabricLoader")
-    api("org.sinytra:forgified-fabric-loader:$versionForgifiedFabricLoader")
+    include("org.sinytra:forgified-fabric-loader:$versionForgifiedFabricLoader:full")
+    compileOnly("org.sinytra:forgified-fabric-loader:$versionForgifiedFabricLoader")
+    runtimeOnly("org.sinytra:forgified-fabric-loader:$versionForgifiedFabricLoader:full")
 }
 
 val processIncludedJars by tasks.registering(NestableJarGenerationTask::class) {
